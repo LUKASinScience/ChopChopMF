@@ -1,8 +1,8 @@
 <h1>
-  hopChopMF 
-  <img src="icon/ChopChopIcon.png" width="45" align="center" alt="ChopChopMF Logo">
+  <img src="icon/ChopChopIcon.png" width="80" valign="middle" alt="ChopChopMF Logo">hopChopMF
 </h1>
 
+## Faster, Friendlier Protein Analysis in ChimeraX
 ## Faster, Friendlier Protein Analysis in ChimeraX
 
 ## Faster, Friendlier Protein Analysis in ChimeraX
