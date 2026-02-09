@@ -1,5 +1,5 @@
 <h1>
-  <img src="icon/ChopChopIcon.png" width="100" align="middle" alt="ChopChopMF Logo">hopChopMF
+  <img src="icon/ChopChopIcon.png" width="200" align="middle" alt="ChopChopMF Logo">hopChopMF
 </h1>
 
 
