@@ -1,0 +1,43 @@
+/* --- TOP HEADER LOGO --- */
+.md-logo img {
+  height: 3.5rem !important; 
+  width: auto !important;
+  background-color: white !important;
+  border-radius: 50% !important; /* Circular background */
+  padding: 6px !important;
+  margin-top: -4px;
+}
+
+/* --- HOME PAGE BRAND CONTAINER --- */
+[data-md-component="main"] .brand-container {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  padding: 15px 40px;
+  border-radius: 25px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  margin: 40px 0;
+  width: fit-content;
+}
+
+[data-md-component="main"] .brand-container img {
+  height: 100px !important; 
+  width: auto !important;
+  margin-right: 15px;
+}
+
+[data-md-component="main"] .brand-container h1 {
+  margin: 0 !important;
+  color: #FA8072 !important;
+  font-size: 3.0rem !important; 
+  border: none !important;
+  line-height: 1;
+}
+
+/* --- USAGE PAGE CARD SPACING --- */
+#using-chopchopmf ~ .grid.cards li {
+  padding: 24px !important;
+  border: 1px solid rgba(250, 128, 114, 0.2) !important;
+  border-radius: 12px !important;
+  list-style: none !important;
+}

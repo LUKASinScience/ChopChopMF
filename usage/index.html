@@ -1,0 +1,1174 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://LUKASinScience.github.io/ChopChopMF/usage/">
+      
+      
+        <link rel="prev" href="../installation/">
+      
+      
+        <link rel="next" href="../acknowledgements/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Usage - ChopChopMF Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#using-chopchopmf" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ChopChopMF Guide" class="md-header__button md-logo" aria-label="ChopChopMF Guide" data-md-component="logo">
+      
+  <img src="../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ChopChopMF Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Usage
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ChopChopMF Guide" class="md-nav__button md-logo" aria-label="ChopChopMF Guide" data-md-component="logo">
+      
+  <img src="../assets/logo.png" alt="logo">
+
+    </a>
+    ChopChopMF Guide
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-toolbar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Toolbar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chimerax" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ChimeraX
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ChimeraX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chimerax-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ChimeraX Guide
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-biology-file-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural Biology File Formats
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chopchopmf-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ChopChopMF Tools
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ChopChopMF Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-alignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Alignment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-fetch-pdb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Fetch PDB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-modify-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Modify Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-analyze-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Analyze Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-undo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Undo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../acknowledgements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acknowledgements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-toolbar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Toolbar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chimerax" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ChimeraX
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ChimeraX">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chimerax-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ChimeraX Guide
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-biology-file-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural Biology File Formats
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chopchopmf-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ChopChopMF Tools
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ChopChopMF Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-alignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Alignment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-fetch-pdb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Fetch PDB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-modify-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Modify Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-analyze-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Analyze Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-undo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Undo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="using-chopchopmf">Using ChopChopMF</h1>
+<p>ChopChopMF is a user-friendly GUI plug-in for ChimeraX designed to make protein structure analysis faster and more accessible.</p>
+<div class="admonition info">
+<p class="admonition-title">No Commands Needed</p>
+<p>Every action in ChopChopMF triggers the underlying ChimeraX engine automatically, removing the need for complicated command-line syntax.</p>
+</div>
+<h2 id="the-toolbar">The Toolbar</h2>
+<p>After <a href="../installation/">Installation of ChopChopMF</a> and Restarting ChimeraX, you will find ChopChopMF and all it's tools in the Toolbar:</p>
+<p><img alt="ChopChopMF Toolbar" src="../assets/toolbar.png" /></p>
+<div class="admonition tip">
+<p class="admonition-title">Know the File types used in ChimeraX</p>
+<p>To get the most out of <strong>ChopChopMF</strong>, it is helpful to understand the different file types used by ChimeraX to represent molecular data. Therefore, there is a small section with  a quick overview of the most common formats you will encounter.</p>
+<p>If you are already familiar with ChimeraX, skip this and go directly to the fun part, the <a href="./#chopchopmf-tools"><strong>ChopChopMF Tools</strong></a></p>
+</div>
+<hr />
+<h2 id="chimerax">ChimeraX</h2>
+<h3 id="chimerax-guide">ChimeraX Guide</h3>
+<div class="admonition abstract">
+<p class="admonition-title">ChimeraX guides for general ChimeraX usage</p>
+<p>ChimeraX allows you to make beautiful figures in may different styles. ChopChopMF can't cover all of those, if you are new to ChimeraX here are a some Guides, which can help you get started or might inspire you. </p>
+<p>At the end you need to find your own style, supporting your science. Under the <code>Graphics</code> tab in ChimeraX you can also just try out, which style suits you best!</p>
+</div>
+<p><a class="md-button md-button--primary" href="https://www.cgl.ucsf.edu/chimerax/docs/user/index.html" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M241.3-13c-11.4-2.3-23.1-2.3-34.5 0L19.3 24.5C8.1 26.7 0 36.6 0 48c0 10.3 6.5 19.3 16 22.6V144L.3 222.6c-.2.9-.3 1.9-.3 2.9 0 8 6.5 14.6 14.6 14.6h34.9c8 0 14.6-6.5 14.6-14.6 0-1-.1-1.9-.3-2.9L48 144V77.3l48 9.6V144c0 70.7 57.3 128 128 128s128-57.3 128-128V86.9l76.7-15.3C439.9 69.3 448 59.4 448 48s-8.1-21.3-19.3-23.5zM224 224c-44.2 0-80-35.8-80-80h160c0 44.2-35.8 80-80 80m-103.9 96.1C58.7 348.3 16 410.3 16 482.3c0 16.4 13.3 29.7 29.7 29.7H200V366l-57.4-43c-6.5-4.9-15.2-6.2-22.6-2.8zM248 512h154.3c16.4 0 29.7-13.3 29.7-29.7 0-72-42.7-134-104.1-162.1-7.4-3.4-16.1-2.1-22.6 2.8l-57.4 43v146z"/></svg></span> UCSF ChimeraX User Guide</a></p>
+<p><a class="md-button md-button--primary" href="https://rbvi.github.io/chimerax-recipes/" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M241.3-13c-11.4-2.3-23.1-2.3-34.5 0L19.3 24.5C8.1 26.7 0 36.6 0 48c0 10.3 6.5 19.3 16 22.6V144L.3 222.6c-.2.9-.3 1.9-.3 2.9 0 8 6.5 14.6 14.6 14.6h34.9c8 0 14.6-6.5 14.6-14.6 0-1-.1-1.9-.3-2.9L48 144V77.3l48 9.6V144c0 70.7 57.3 128 128 128s128-57.3 128-128V86.9l76.7-15.3C439.9 69.3 448 59.4 448 48s-8.1-21.3-19.3-23.5zM224 224c-44.2 0-80-35.8-80-80h160c0 44.2-35.8 80-80 80m-103.9 96.1C58.7 348.3 16 410.3 16 482.3c0 16.4 13.3 29.7 29.7 29.7H200V366l-57.4-43c-6.5-4.9-15.2-6.2-22.6-2.8zM248 512h154.3c16.4 0 29.7-13.3 29.7-29.7 0-72-42.7-134-104.1-162.1-7.4-3.4-16.1-2.1-22.6 2.8l-57.4 43v146z"/></svg></span> ChimeraX Recipes</a></p>
+<h3 id="structural-biology-file-formats">Structural Biology File Formats</h3>
+<p><a class="md-button md-button--primary" href="https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/filetypes.html" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m23.5 17-5 5-3.5-3.5 1.5-1.5 2 2 3.5-3.5zM6 2c-1.11 0-2 .89-2 2v16c0 1.11.89 2 2 2h7.81c-.53-.91-.81-1.95-.81-3 0-3.31 2.69-6 6-6 .34 0 .67.03 1 .08V8l-6-6m-1 1.5L18.5 9H13Z"/></svg></span> File Types for ChimeraX</a></p>
+<hr />
+<p><strong>1. .pdb (Protein Data Bank)</strong></p>
+<ul>
+<li><strong>What it is:</strong> The classic standard for 3D macromolecular structures.</li>
+<li><strong>Contents:</strong> Atomic coordinates, residue names, chain IDs, and B-factors (representing atomic displacement/uncertainty).</li>
+<li><strong>Note:</strong> PDB files have a strict column-based format and can struggle with very large structures like ribosomes.</li>
+<li><strong>Documentation:</strong> <a href="https://www.cgl.ucsf.edu/chimerax/docs/user/formats/pdbintro.html" target="_blank">Introduction to PDB Format</a></li>
+</ul>
+<p><strong>2. .cif / .mmCIF (Macromolecular Crystallographic Information File)</strong></p>
+<ul>
+<li><strong>What it is:</strong> The modern, more flexible successor to the PDB format.</li>
+<li><strong>Contents:</strong> Similar coordinate and chemical data as PDB, but stored in a table-based format that has no limit on the number of atoms or chains. This is now the default format for the Protein Data Bank.</li>
+<li><strong>Documentation:</strong> <a href="https://mmcif.wwpdb.org/docs/faqs/pdbx-mmcif-faq-general.html" target="_blank">mmCIF Format </a></li>
+</ul>
+<p><strong>3. .mrc / .map (Density Map)</strong></p>
+<ul>
+<li><strong>What it is:</strong> A "volume" file used primarily in Cryo-EM and Tomography.</li>
+<li><strong>Contents:</strong> A 3D grid of voxels where each point has a value representing electron density. It does <strong>not</strong> contain atom names, but rather the "cloud" that atomic models are fitted into.</li>
+</ul>
+<p><strong>4. .defattr (Attribute Assignment)</strong></p>
+<ul>
+<li><strong>What it is:</strong> A simple text file used to "tag" atoms or residues with custom metadata.</li>
+<li><strong>Contents:</strong> Numerical values mapped to specific residues (e.g., conservation scores, hydrophobicity, or AlphaMissense data). In ChimeraX, you can use these files to color your structure using the <code>color byattribute</code> command.</li>
+<li><strong>Documentation:</strong> <a href="https://www.cgl.ucsf.edu/chimerax/docs/user/formats/defattr.html" target="_blank">Attribute Assignment (.defattr)</a></li>
+</ul>
+<p><strong>5. .json (JavaScript Object Notation)</strong></p>
+<ul>
+<li><strong>What it is:</strong> A general-purpose, human-readable data format used for metadata.</li>
+<li><strong>Contents:</strong> In the context of structural predictions (like AlphaFold), <code>.json</code> files typically store the <strong>Predicted Aligned Error (PAE)</strong> maps or structural confidence scores.</li>
+<li><strong>Documentation:</strong> <a href="https://www.cgl.ucsf.edu/chimerax/docs/user/commands/alphafold.html" target="_blank">AlphaFold PAE/JSON Support</a></li>
+</ul>
+<hr />
+<h2 id="chopchopmf-tools">ChopChopMF Tools</h2>
+<h3 id="1-alignment">1. Alignment</h3>
+<p>Tools to visualize mutations and conservation directly on the 3D structure.</p>
+<p>For alignment MUSCLE multiple sequence alignment is used. </p>
+<p>The semi conservation of Amino acids is in ChopChopMF as in the following table stated:</p>
+<details class="info">
+<summary>Click to expand: Amino Acid Similarity Table</summary>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Amino Acid (1-letter, 3-letter)</th>
+<th style="text-align: left;">Similar Amino Acids (1-letter, 3-letter)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>V</strong> (Val)</td>
+<td style="text-align: left;"><strong>I</strong> (Ile)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>L</strong> (Leu)</td>
+<td style="text-align: left;"><strong>I</strong> (Ile), <strong>V</strong> (Val)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>I</strong> (Ile)</td>
+<td style="text-align: left;"><strong>L</strong> (Leu), <strong>V</strong> (Val)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>F</strong> (Phe)</td>
+<td style="text-align: left;"><strong>Y</strong> (Tyr), <strong>W</strong> (Trp)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Y</strong> (Tyr)</td>
+<td style="text-align: left;"><strong>F</strong> (Phe), <strong>W</strong> (Trp)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>W</strong> (Trp)</td>
+<td style="text-align: left;"><strong>F</strong> (Phe), <strong>Y</strong> (Tyr)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>H</strong> (His)</td>
+<td style="text-align: left;"><strong>N</strong> (Asn), <strong>Q</strong> (Gln)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>N</strong> (Asn)</td>
+<td style="text-align: left;"><strong>H</strong> (His), <strong>Q</strong> (Gln)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Q</strong> (Gln)</td>
+<td style="text-align: left;"><strong>H</strong> (His), <strong>N</strong> (Asn)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>R</strong> (Arg)</td>
+<td style="text-align: left;"><strong>K</strong> (Lys)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>K</strong> (Lys)</td>
+<td style="text-align: left;"><strong>R</strong> (Arg)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>D</strong> (Asp)</td>
+<td style="text-align: left;"><strong>E</strong> (Glu)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>E</strong> (Glu)</td>
+<td style="text-align: left;"><strong>D</strong> (Asp)</td>
+</tr>
+</tbody>
+</table>
+</details>
+<p><img align="left" alt="Sequence" src="../assets/ChopAlignIcon.png" width="60" />
+<strong>Sequence</strong> Performs a 1:1 sequence alignment using MUSCLE software to evaluate conservation levels.</p>
+<details class="tip">
+<summary>Conservation against a database? Try ConSurf</summary>
+<p>If you want to run a database against your protein, to see how the conservation is among a several proteins/isoforms/within a protein class, you should try and use ConSurf</p>
+<p><a href="https://consurf.tau.ac.il/" target="_blank"><img alt="ConSurf" src="../assets/consurf.png" /></a></p>
+<p><em>Click to open ConSurf webbrowser</em></p>
+</details>
+<p><br clear="left"></p>
+<p><img align="left" alt="Missense" src="../assets/ChopMissenseIcon.png" width="60" /></p>
+<p><strong>Missense</strong> Performs a multiple sequence alignment of a non-human protein with a human sequence to plot AlphaMissense scores.</p>
+<p>The following you should take into consideration, if you are using the <strong>Missense</strong> Tool</p>
+<div class="admonition info">
+<p class="admonition-title">AlphaMissense scores for Non-human Proteins</p>
+<p>As mentioned in the <strong>AlphaMissense</strong> References tab below, trained model weights are not released for the AlphaMissense code.</p>
+<p>To anyways be able to "predict" in a way AlphaMissense scores for Non-human Proteins, the Missense tool allows you to perform a sequence alignment of the Non-human Protein with it's human Homolog.</p>
+<p>Only conserved residues will get the AlphaMissense score of the human protein.</p>
+</div>
+<div class="admonition example">
+<p class="admonition-title">How to evaluate conserved AlphaMissense Scores?</p>
+<p>When a non-human protein exhibits an extended region of conservation with its human ortholog, it suggests the presence of a conserved functional motif or domain. In such cases, AlphaMissense pathogenicity scores may theoretically be extrapolated to the non-human protein. </p>
+<p>Conversely, conservation limited to isolated residues should be considered a significantly less robust basis for cross-species prediction </p>
+</div>
+<p><br clear="left"></p>
+<h3 id="2-fetch-pdb">2. Fetch PDB</h3>
+<p>Access structural databases through a simplified interface that skips complex fetch commands.</p>
+<p><img align="left" alt="AlphaMissense" src="../assets/ChopGetMissense.png" width="60" />
+<strong>AlphaMissense</strong> Fetches human protein structures with AlphaMissense scores by UniProt ID or uploaded TSV files.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Analysis</label><label for="__tabbed_1_2">References</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<ul>
+<li>Enter Uniprot ID of Human Protein (for download path, your <code>Downloads</code> is the Default setting)</li>
+</ul>
+<p>Or</p>
+<ul>
+<li>Select TSV file, containing the AlphaMissense Scoring information for upload and select the matching .pdb file</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<div class="admonition abstract">
+<p class="admonition-title">Alphamissense Paper</p>
+<p><a href="https://www.science.org/doi/10.1126/science.adg7492" target="_blank">Accurate proteome-wide missense variant effect prediction with AlphaMissense</a></p>
+<p>The code is available under: <a class="md-button md-button--primary" href="https://github.com/google-deepmind/alphamissense" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span> GitHub alphamissense</a></p>
+<p>However, since trained model weights are not released, the code is not meant to be used for making new predictions!</p>
+</div>
+<p><a class="md-button md-button--primary" href="https://alphamissense.hegelab.org/" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 2v2h1v14a4 4 0 0 0 4 4 4 4 0 0 0 4-4V4h1V2zm4 14c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1m2-4c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1m1-5h-4V4h4z"/></svg></span> Hegelab</a></p>
+</div>
+</div>
+</div>
+<p>AlphaMissense Structures and Scores are downloaded through the:</p>
+<p><a class="md-button md-button--primary" href="https://alphamissense.hegelab.org/hotspot" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2m-5.15 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56M14.34 14H9.66c-.1-.66-.16-1.32-.16-2s.06-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2M12 19.96c-.83-1.2-1.5-2.53-1.91-3.96h3.82c-.41 1.43-1.08 2.76-1.91 3.96M8 8H5.08A7.92 7.92 0 0 1 9.4 4.44C8.8 5.55 8.35 6.75 8 8m-2.92 8H8c.35 1.25.8 2.45 1.4 3.56A8 8 0 0 1 5.08 16m-.82-2C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2M12 4.03c.83 1.2 1.5 2.54 1.91 3.97h-3.82c.41-1.43 1.08-2.77 1.91-3.97M18.92 8h-2.95a15.7 15.7 0 0 0-1.38-3.56c1.84.63 3.37 1.9 4.33 3.56M12 2C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2"/></svg></span> Hegelab AlphaMissense Hotspots</a></p>
+<p><br clear="left"></p>
+<p><img align="left" alt="AlphaFold2" src="../assets/AlphaFoldIconChop.png" width="60" />
+<strong>AlphaFold2</strong> Accesses the AlphaFold database directly, plotting pLDDT scores and providing AlphaSync residue information. </p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:5"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">AlphaFold</label><label for="__tabbed_2_2">pLDDT Coloring</label><label for="__tabbed_2_3">UniProt</label><label for="__tabbed_2_4">Databases</label><label for="__tabbed_2_5">AlphaSync</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<ul>
+<li>
+<p><strong>Fetch</strong> Open the database structure with the most similar sequence. Switch <code>Sequence</code> to UniProt identifer, to use UniProt ID</p>
+</li>
+<li>
+<p><strong>Search</strong> Find similar sequences in the AlphaFold database using BLAST</p>
+</li>
+<li>
+<p><strong>Predict</strong> Compute a new structure using AlphaFold on Google servers.</p>
+</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>
+<p>Color by <code>B-Factor</code> your prediction with the pLDDT score</p>
+</li>
+<li>
+<p>The AlphaFold Confidence Score Information is given for each color</p>
+</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<div class="admonition warning">
+<p class="admonition-title"><strong>UniProt Annotation &amp; Association</strong></p>
+<p>UniProt Annotation &amp; Association can only be plotted by ChopChopMF if they are provided by UniProt!</p>
+</div>
+<ol>
+<li>
+<p>Select an opened Model, this must be from the AlphaFold Protein Structure Database or AlphaFold2</p>
+</li>
+<li>
+<p>If you selected a model from the AlphaFold Protein Structure Database ChopChopMF can enter already the UniProt ID, otherwise please enter.</p>
+</li>
+</ol>
+</div>
+<div class="tabbed-block">
+<p>Links to <a class="md-button md-button--primary" href="https://www.uniprot.org/" target="_blank">UniProt</a> and <a class="md-button md-button--primary" href="https://alphafold.ebi.ac.uk/" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.99 1.62a8.54 8.54 0 0 0-2.54 6.83c.35 4.4 4.51 7.99 8.28 7.99 3.5 0 4.88-3.06 4.54-5.14a4.3 4.3 0 0 0-.95-2.07c.63.34 1.24.77 1.81 1.3 1.52 1.41 2.44 3.23 2.58 5.1.33 4.13-2.73 8.37-7.85 8.37-1.69 0-3.48-.43-4.98-1.14C2.82 20.94 0 16.8 0 12 0 7.57 2.41 3.7 5.99 1.62M12.14 0c1.69 0 3.48.43 4.98 1.14A12 12 0 0 1 24 12c0 4.43-2.41 8.3-5.99 10.38a8.54 8.54 0 0 0 2.54-6.83c-.35-4.4-4.51-7.99-8.28-7.99-3.5 0-4.88 3.06-4.54 5.14a4.3 4.3 0 0 0 .96 2.07 8.7 8.7 0 0 1-1.81-1.3c-1.52-1.41-2.44-3.23-2.59-5.1C3.96 4.24 7.02 0 12.14 0"/></svg></span> AlphaFold Protein Structure Database</a></p>
+</div>
+<div class="tabbed-block">
+<p><a href="https://alphasync.stjude.org/" target="_blank"> <img alt="AlphaSync" src="../assets/AlphaSync.png" /> <br> <strong>AlphaSync</strong> </a></p>
+<ol>
+<li>Select an opened Model, this must be from the AlphaFold Protein Structure Database or AlphaFold2</li>
+</ol>
+<p>Or</p>
+<ol>
+<li>
+<p>Enter UniProt ID</p>
+</li>
+<li>
+<p>Run <strong><em>ChopChop AlphaSync Residue Data</em></strong></p>
+</li>
+<li>
+<p>By Clicking on <code>Residue Data</code> you get datatable. Under <code>Explanations</code> The Paramaters are explained</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<p><br clear="left"></p>
+<h3 id="3-modify-structure">3. Modify Structure</h3>
+<p>Essential tools for preparing models for downstream analysis.</p>
+<p><img align="left" alt="Crop" src="../assets/crop.png" width="60" />
+<strong>Crop Structure</strong> Select a structure and residue range to keep; the tool automatically deletes all others.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">CropResidues</label><label for="__tabbed_3_2">Delete Chain</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Set the Residues (Residue Range) you want to keep and remove alll others from the Chain.</p>
+<div class="admonition tip">
+<p class="admonition-title">ChopChop Crop before Foldseek</p>
+<p>Remove residues you are not interested before using Foldseek to focus on the parts you are interested in of your protein. Further removal of large disordered domains can help to improve Foldseek results in some cases</p>
+</div>
+</div>
+<div class="tabbed-block">
+<p>You want to get rid of a whole Chain? Just select and delet it.</p>
+<div class="admonition warning">
+<p class="admonition-title">Deletions are terminal</p>
+<p>If you delet Residues or Chains, you can't undo this. </p>
+</div>
+</div>
+</div>
+</div>
+<p><br clear="left"></p>
+<p><img align="left" alt="Duplicate" src="../assets/copyicon.png" width="60" />
+<strong>Duplicate Structure</strong> Duplicates a model with one click to serve as a base for symmetric copies or measurements.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:3"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Duplicate Structure</label><label for="__tabbed_4_2">Measure Center</label><label for="__tabbed_4_3">Symmetry Copies</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>You want to duplicate your structure? Just select it and <strong>ChopChop Double</strong></p>
+<p>The duplication works on a Chain level, if you wish to give the copy a slight offset to the original, tick <code>Apply offset to duplicate</code>. This way you can find it easier.</p>
+<div class="admonition tip">
+<p class="admonition-title">ChopChop Double before ChopChop Crop</p>
+<p>Modifications to the structure are terminal within ChimeraX, therefore you can first double your structure before you delete some residues.</p>
+</div>
+</div>
+<div class="tabbed-block">
+<p>You have a Map and want to fit in several of your proteins in a symetric way into this Map? </p>
+<p>Measure the Center of the Map! The center of the Map will be displaced in the Log.</p>
+</div>
+<div class="tabbed-block">
+<p>You <code>ChopChop Measured Center</code> of your map?</p>
+<p>Copy from the log the XYZ coordinates and <code>Paste XYZ for center</code>. <code>Apply</code> or set the Center manually.</p>
+<p>Select the structure and your Symmetry.</p>
+<p><strong>ChopChop Symmetry Copies</strong></p>
+</div>
+</div>
+</div>
+<p><br clear="left"></p>
+<h3 id="4-analyze-structure">4. Analyze Structure</h3>
+<p>A platform for both inexperienced and advanced users to analyze complexes efficiently.</p>
+<p><img align="left" alt="PAE" src="../assets/pae_icon.png" width="60" />
+<strong>PAE Analysis</strong> Rapidly investigates Predicted Aligned Error (PAE) values between selected chains.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">1. PAE Contacts</label><label for="__tabbed_5_2">2. PAE Contact Residues</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="admonition warning">
+<p class="admonition-title">Only one Model can be opened in ChimeraX for evaluating the PAE Contacts!</p>
+<p>Be aware that only one model/prediction of AlphaFold2 or AlphaFold3 can be opened. Besides the .pdb or .cif structure file you also need the matching .jason file from the prediction!</p>
+</div>
+<p>Select the Chais you want to investigate, set the distance, recommended is not to go above 8Å (since protein-protein interactions above are too far away from each other)</p>
+<p><strong>ChopChop PAE</strong></p>
+</div>
+<div class="tabbed-block">
+<p>You saw some interesting or promising results with <strong>ChopChop PAE</strong> ? Now you would like to see the side chains of the pseudobonds with a good (blue) score?</p>
+<p>Just <strong>ChopChop PAE interaction Residues</strong> and have a closer look</p>
+<p>A much more preciser analysis of the PAE can be perfromed outside the ChimeraX environment with the <a href="https://pae-viewer.uni-goettingen.de/" target="_blank">  <strong>PAE Viewer</strong> </a></p>
+</div>
+</div>
+</div>
+<p><br clear="left"></p>
+<p><img align="left" alt="PISA" src="../assets/pisa.png" width="60" />
+<strong>PDBePISA</strong> Directly plots interface residues, hydrogen bonds, and salt bridges calculated by the PISA webserver.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">Interface Scoring</label><label for="__tabbed_6_2">ΔG Filter</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="admonition experiment">
+<p class="admonition-title">How to get the XML file</p>
+<p>To obtain the required data for the scoring module, follow these steps:</p>
+<ol>
+<li>
+<p><strong>Open PDBePISA:</strong> <a href="https://www.ebi.ac.uk/pdbe/pisa/" target="_blank">Click to open PDBePISA Website</a></p>
+<ul>
+<li>Press the <code>Launch PDBePisa</code> button.</li>
+</ul>
+</li>
+<li>
+<p><strong>Submit Structure:</strong> Enter your <strong>PDB ID</strong> or upload your <code>.pdb</code> file and click <strong>Analyze</strong>.</p>
+<ul>
+<li>Select <code>Coordinate file</code> to upload your structure of the protein complex</li>
+</ul>
+</li>
+<li>
+<p><strong>Interface List:</strong> Click the <strong>Interfaces</strong> button to see the list of identified macromolecular contacts.</p>
+</li>
+<li><strong>Detail View:</strong> Press the <strong>Details</strong> button for the specific interface you want to analyze.</li>
+<li><strong>Configure Display:</strong> Scroll down to the <strong>Interfacing residues</strong> section.</li>
+<li><strong>Export:</strong> * Set the <strong>Display level</strong> to <strong>Residues</strong>.<ul>
+<li>Press the <strong>XML</strong> button.</li>
+<li>Save the <code>.xml</code> file to your computer.</li>
+</ul>
+</li>
+</ol>
+</div>
+<p><strong>Using the ChopChopMF Interface</strong></p>
+<p>Once you have your XML file, use the <strong>Interface Scoring</strong> tab as follows:</p>
+<p>Scoring &amp; Coloring Steps</p>
+<ul>
+<li>
+<p><strong>Load Data:</strong> Click <strong>Select PDBePISA XML File</strong> and upload the file you just downloaded.</p>
+</li>
+<li>
+<p><strong>Map Interfaces:</strong> Click <strong>ChopChop PISA Interfaces</strong> to map the residues to your structure.</p>
+</li>
+<li>
+<p><strong>Scoring Scheme:</strong> The tool automatically categorizes residues based on:</p>
+<ul>
+<li><span style="color:darkorange">■</span> <strong>Buried:</strong> Residues hidden in the interface.</li>
+<li><span style="color:cornflowerblue">■</span> <strong>Hydrogen Bond:</strong> Specific polar interactions.</li>
+<li><span style="color:purple">■</span> <strong>Salt Bridge:</strong> Electrostatic interactions between charged side chains.</li>
+</ul>
+</li>
+<li>
+<p><strong>Update Visuals:</strong> You can type new color names (e.g., <code>red</code>, <code>gold</code>, <code>blue</code>) in the text fields and click <code>Apply New Color Scheme</code>.</p>
+</li>
+</ul>
+<hr />
+</div>
+<div class="tabbed-block">
+<div class="admonition abstract">
+<p class="admonition-title"><strong>PDBePISA: Solvation Energy (ΔG) Analysis</strong></p>
+<p>The <strong>ΔG Filter</strong> tab in ChopChopMF allows you to visualize the thermodynamic contribution of specific residues to the interface stability, based on the <code>SOLVATIONENERGY</code> values provided in the PISA XML.</p>
+</div>
+<p><strong>1. Setting up the Filter</strong></p>
+<p>Once your PDBePISA XML is loaded, you can fine-tune the visualization using these parameters:</p>
+<ul>
+<li>
+<p><strong>Load XML:</strong> Use <strong>Load PDBePISA XML File</strong> to bring in your data.</p>
+</li>
+<li>
+<p><strong>Append Mode:</strong> Toggle this to accumulate residues across multiple loaded interfaces.</p>
+</li>
+<li>
+<p><strong>Neutral band (+/- ε):</strong> Define a baseline (default <code>0.01 kcal/mol</code>) for residues that contribute negligibly to the interface. These will be colored <code>lightgrey</code>.</p>
+</li>
+<li>
+<p><strong>ΔG Cutoff:</strong> Use the slider to filter out residues with low solvation energy. Checking <strong>Only show residues ΔG cutoff</strong> will hide everything below your specified threshold.</p>
+</li>
+</ul>
+<hr />
+<p><strong>2. Using the ΔG Coloring Interface</strong></p>
+<p>This module maps energy values to a specific color palette to highlight "hotspots" in the interface:</p>
+<p><strong>Visualization Steps</strong></p>
+<ol>
+<li>
+<p><strong>ChopChop ΔG Coloring:</strong> Apply the energy-based colors to your structure in ChimeraX.</p>
+</li>
+<li>
+<p><strong>Plot ΔGValues:</strong> Generate a graphical plot of the energy distribution across the interface residues.</p>
+</li>
+<li>
+<p><strong>Customizing the Palette:</strong> You can modify the color assigned to each energy range. </p>
+</li>
+</ol>
+<hr />
+<div class="admonition example">
+<p class="admonition-title">Understanding the Data</p>
+<ul>
+<li>
+<p><strong>Source:</strong> Values are read directly from the <code>SOLVATIONENERGY</code> field in the XML.</p>
+</li>
+<li>
+<p><strong>Exclusions:</strong> Residues with ΔG = 0.0 or a <code>BURIEDSURFACEAREA = 0</code> are automatically excluded to avoid noise from non-interfacing residues.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<p><br clear="left"></p>
+<p><img align="left" alt="Foldseek" src="../assets/foldseeklogo.png" width="60" />
+<strong>Foldseek Analysis</strong> Provides a GUI for structural homolog searches within ChimeraX.</p>
+<div class="admonition tip">
+<p class="admonition-title">Use the Crop Structure Tool before Foldseek</p>
+<p>Foldseek searches will be more precise and efficient if you crop away all unecessary residues within your structure, so the focus is on your <strong>Domain of Interest</strong></p>
+<p>Disordered parts of the protein you might also want to delete, since IDPs have no fixed structure and are rather an ensamble of possible structures, Foldseek cant map those on a certain structure well.</p>
+</div>
+<p>Foldseek was great, but you are looking for more tools? There is more to explore, so far outside ChimeraX and ChopChopMF, but this should not hold you back!</p>
+<p><a class="md-button md-button--primary" href="https://opendata.mmseqs.org/" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M241.3-13c-11.4-2.3-23.1-2.3-34.5 0L19.3 24.5C8.1 26.7 0 36.6 0 48c0 10.3 6.5 19.3 16 22.6V144L.3 222.6c-.2.9-.3 1.9-.3 2.9 0 8 6.5 14.6 14.6 14.6h34.9c8 0 14.6-6.5 14.6-14.6 0-1-.1-1.9-.3-2.9L48 144V77.3l48 9.6V144c0 70.7 57.3 128 128 128s128-57.3 128-128V86.9l76.7-15.3C439.9 69.3 448 59.4 448 48s-8.1-21.3-19.3-23.5zM224 224c-44.2 0-80-35.8-80-80h160c0 44.2-35.8 80-80 80m-103.9 96.1C58.7 348.3 16 410.3 16 482.3c0 16.4 13.3 29.7 29.7 29.7H200V366l-57.4-43c-6.5-4.9-15.2-6.2-22.6-2.8zM248 512h154.3c16.4 0 29.7-13.3 29.7-29.7 0-72-42.7-134-104.1-162.1-7.4-3.4-16.1-2.1-22.6 2.8l-57.4 43v146z"/></svg></span> More Software by the Steinegger Lab</a></p>
+<p><a class="md-button md-button--primary" href="https://search.foldseek.com/search" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M241.3-13c-11.4-2.3-23.1-2.3-34.5 0L19.3 24.5C8.1 26.7 0 36.6 0 48c0 10.3 6.5 19.3 16 22.6V144L.3 222.6c-.2.9-.3 1.9-.3 2.9 0 8 6.5 14.6 14.6 14.6h34.9c8 0 14.6-6.5 14.6-14.6 0-1-.1-1.9-.3-2.9L48 144V77.3l48 9.6V144c0 70.7 57.3 128 128 128s128-57.3 128-128V86.9l76.7-15.3C439.9 69.3 448 59.4 448 48s-8.1-21.3-19.3-23.5zM224 224c-44.2 0-80-35.8-80-80h160c0 44.2-35.8 80-80 80m-103.9 96.1C58.7 348.3 16 410.3 16 482.3c0 16.4 13.3 29.7 29.7 29.7H200V366l-57.4-43c-6.5-4.9-15.2-6.2-22.6-2.8zM248 512h154.3c16.4 0 29.7-13.3 29.7-29.7 0-72-42.7-134-104.1-162.1-7.4-3.4-16.1-2.1-22.6 2.8l-57.4 43v146z"/></svg></span> Foldseek Webserver</a></p>
+<p><br clear="left"></p>
+<h3 id="5-undo">5. Undo</h3>
+<p><img align="left" alt="Undo" src="../assets/ChopUndo.png" width="60" />
+<strong>Undo</strong> Provides a safety function to revert an action besides structural modifications, which is not possible in ChimeraX.</p>
+<p><br clear="left"></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.expand", "content.code.copy", "navigation.top"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
