@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="icon/ChopChopIcon.png" width="200" alt="ChopChopMF Logo">
+</p>
+
 # ChopChopMF
 
 ## Faster, Friendlier Protein Analysis in ChimeraX
