@@ -7,6 +7,10 @@
 ## Guide
 
 
-## Installation After installing ChopChopMF, please close and restart ChimeraX.
+## Installation 
+
+After installing ChopChopMF, please close and restart ChimeraX.
+
+## Latest Version
 
 Version 1.1
