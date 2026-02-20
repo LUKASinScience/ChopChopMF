@@ -170,7 +170,7 @@ Access structural databases through a simplified interface that skips complex fe
 
 === "References"
 
-    !!! abstract "Alphamissense Paper"
+    !!! abstract "AlphaMissense Paper"
 
         [Accurate proteome-wide missense variant effect prediction with AlphaMissense](https://www.science.org/doi/10.1126/science.adg7492){:target="_blank"}
 
