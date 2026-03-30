@@ -12,7 +12,7 @@ Full Documentation, Installation Guide and Usage you can find here in the:
 
 ## Installation 
 
-After installing ChopChopMF, please close and restart ChimeraX. Installation Guide is within the: 
+After installing ChopChopMF, please close and restart ChimeraX. Installation Guide is within the: [![ChopChopMF Guide](https://img.shields.io/badge/ChopChopMF-Guide-teal?style=for-the-badge)](https://lukasinscience.github.io/ChopChopMF/)
 
 ## Latest Version
 
