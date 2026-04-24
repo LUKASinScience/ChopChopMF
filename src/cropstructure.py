@@ -16,14 +16,14 @@ CropStructureTool.py
 A ChimeraX tool for:
 - Cropping a structure by removing residues not in a specified range
 - Deleting an entire chain from the model
-It uses a tabbed interface for easy selection and consistent style with other tools.
+- Previewing the crop via "cartoon hide sel" 
 """
 
 from chimerax.core.tools import ToolInstance
 from chimerax.ui import MainToolWindow
 from chimerax.core.commands import run
 from Qt.QtWidgets import (QVBoxLayout, QLineEdit, QLabel, QPushButton, QComboBox,
-                           QWidget, QTabWidget)
+                           QWidget, QTabWidget, QHBoxLayout)
 from Qt.QtGui import QFont
 
 
@@ -36,6 +36,10 @@ class CropStructureTool(ToolInstance):
         super().__init__(session, tool_name)
         self.display_name = "Crop Structure"
         self.tool_window = MainToolWindow(self)
+        
+        # Status for the preview logic
+        self.preview_active = False
+        
         self._build_ui()
 
     def _build_ui(self):
@@ -53,8 +57,6 @@ class CropStructureTool(ToolInstance):
         tabs.addTab(self._create_delete_tab(), "Delete Chain")
         layout.addWidget(tabs)
 
-        container = QWidget()
-        container.setLayout(layout)
         self.tool_window.ui_area.setLayout(layout)
         self.tool_window.manage('side')
 
@@ -78,49 +80,104 @@ class CropStructureTool(ToolInstance):
         self.residue_input = QLineEdit()
         layout.addWidget(self.residue_input)
 
+        # Button Area
+        btn_layout = QHBoxLayout()
+        
+        self.preview_btn = QPushButton("Hide Deletion Preview")
+        self.preview_btn.clicked.connect(self.toggle_preview)
+        btn_layout.addWidget(self.preview_btn)
+
         crop_button = QPushButton("ChopChop Crop")
+        crop_button.setStyleSheet("font-weight: bold; background-color: #d32f2f; color: white;")
         crop_button.clicked.connect(self.crop_structure)
-        layout.addWidget(crop_button)
+        btn_layout.addWidget(crop_button)
+        
+        layout.addLayout(btn_layout)
 
         self._refresh_crop_models()
         widget.setLayout(layout)
         return widget
 
-    def _create_delete_tab(self):
-        widget = QWidget()
-        layout = QVBoxLayout()
+    def toggle_preview(self):
+        """Executes preview via 'select' and 'hide' or performs an 'undo'."""
+        if not self.preview_active:
+            model_id = self.crop_model_selector.currentText().strip()
+            chain_id = self.crop_chain_selector.currentText().strip()
+            residue_range = self.residue_input.text().strip()
+            
+            if not (model_id and chain_id and residue_range):
+                self.session.logger.warning("Select Model, Chain and Range first.")
+                return
 
-        layout.addWidget(QLabel("Select model:"))
-        self.delete_model_selector = QComboBox()
-        layout.addWidget(self.delete_model_selector)
+            try:
+                # 1. Calculate residues that should NOT be kept
+                residues_to_keep = self.parse_residue_range(residue_range)
+                total_residues = self.get_all_residue_numbers(model_id, chain_id)
+                to_remove = [n for n in total_residues if n not in residues_to_keep]
 
-        layout.addWidget(QLabel("Select chain:"))
-        self.delete_chain_selector = QComboBox()
-        layout.addWidget(self.delete_chain_selector)
+                if to_remove:
+                    # 2. Command: Select and Hide
+                    spec = f"#{model_id}/{chain_id}:{','.join(map(str, to_remove))}"
+                    run(self.session, f"select {spec}")
+                    run(self.session, "hide sel; cartoon hide sel")
+                    
+                    self.preview_active = True
+                    self.preview_btn.setText("Reset Preview (Undo)")
+                    self.session.logger.info(f"Preview active: Hidden residues {spec}")
+            except Exception as e:
+                self.session.logger.error(f"Preview Error: {e}")
+        else:
+            # 3. Undo function
+            run(self.session, "undo")
+            self.preview_active = False
+            self.preview_btn.setText("Hide Deletion Preview")
 
-        refresh_button = QPushButton("Refresh models and chains")
-        refresh_button.clicked.connect(self._refresh_delete_models)
-        layout.addWidget(refresh_button)
+    def crop_structure(self):
+        """Deletes the currently selected (hidden) residues or recalculates them."""
+        model_id = self.crop_model_selector.currentText().strip()
+        chain_id = self.crop_chain_selector.currentText().strip()
+        residue_range = self.residue_input.text().strip()
 
-        delete_button = QPushButton("Delete Chain")
-        delete_button.clicked.connect(self.delete_chain)
-        layout.addWidget(delete_button)
+        if not (model_id and chain_id and residue_range):
+            return
 
-        self._refresh_delete_models()
-        widget.setLayout(layout)
-        return widget
+        try:
+            # If preview is active, the residues are already selected
+            if not self.preview_active:
+                residues_to_keep = self.parse_residue_range(residue_range)
+                total_residues = self.get_all_residue_numbers(model_id, chain_id)
+                to_remove = [n for n in total_residues if n not in residues_to_keep]
+                if to_remove:
+                    spec = f"#{model_id}/{chain_id}:{','.join(map(str, to_remove))}"
+                    run(self.session, f"select {spec}")
+            
+            # Execute the deletion process
+            run(self.session, "delete sel")
+            run(self.session, "select clear")
+            self.preview_active = False
+            self.preview_btn.setText("Hide Deletion Preview")
+            self.session.logger.info(f"Cropped Model {model_id} Chain {chain_id}.")
+        except Exception as e:
+            self.session.logger.error(f"Error cropping structure: {e}")
+
+    # --- Helper Functions ---
+
+    def get_all_residue_numbers(self, model_id, chain_id):
+        """Returns a list of all residue numbers for the chain."""
+        model = next((m for m in self.session.models if m.id_string == model_id), None)
+        if model:
+            return [r.number for r in model.residues if r.chain_id == chain_id]
+        return []
 
     def _refresh_crop_models(self):
         self._populate_models(self.crop_model_selector)
         self._refresh_chain_list(self.crop_model_selector, self.crop_chain_selector)
-
         self.crop_model_selector.currentIndexChanged.connect(
             lambda: self._refresh_chain_list(self.crop_model_selector, self.crop_chain_selector))
 
     def _refresh_delete_models(self):
         self._populate_models(self.delete_model_selector)
         self._refresh_chain_list(self.delete_model_selector, self.delete_chain_selector)
-
         self.delete_model_selector.currentIndexChanged.connect(
             lambda: self._refresh_chain_list(self.delete_model_selector, self.delete_chain_selector))
 
@@ -139,57 +196,37 @@ class CropStructureTool(ToolInstance):
             for cid in chains:
                 chain_selector.addItem(cid)
 
-    def crop_structure(self):
-        model_id = self.crop_model_selector.currentText().strip()
-        chain_id = self.crop_chain_selector.currentText().strip()
-        residue_range = self.residue_input.text().strip()
-        if not (model_id and chain_id and residue_range):
-            self.session.logger.warning("Fill in Model, Chain, and Residue Range fields.")
-            return
-        try:
-            self.session.logger.info(f"Parsing residue range: '{residue_range}'")
-            residues_to_keep = self.parse_residue_range(residue_range)
-            total = self.get_total_residues(model_id, chain_id)
-            to_remove = [r for r in range(1, total+1) if r not in residues_to_keep]
-            if to_remove:
-                sel_cmd = f"select #{model_id}/{chain_id}:{','.join(map(str, to_remove))}"
-                self.session.logger.info(f"Selecting residues to delete: {sel_cmd}")
-                run(self.session, sel_cmd)
-                run(self.session, "delete sel")
-                run(self.session, "select clear")
-            self.session.logger.info(f"Cropped Model {model_id} Chain {chain_id}.")
-        except Exception as e:
-            self.session.logger.error(f"Error cropping structure: {e}")
+    def _create_delete_tab(self):
+        widget = QWidget()
+        layout = QVBoxLayout()
+        layout.addWidget(QLabel("Select model:"))
+        self.delete_model_selector = QComboBox()
+        layout.addWidget(self.delete_model_selector)
+        layout.addWidget(QLabel("Select chain:"))
+        self.delete_chain_selector = QComboBox()
+        layout.addWidget(self.delete_chain_selector)
+        refresh_button = QPushButton("Refresh models and chains")
+        refresh_button.clicked.connect(self._refresh_delete_models)
+        layout.addWidget(refresh_button)
+        delete_button = QPushButton("Delete Chain")
+        delete_button.clicked.connect(self.delete_chain)
+        layout.addWidget(delete_button)
+        self._refresh_delete_models()
+        widget.setLayout(layout)
+        return widget
 
     def delete_chain(self):
         model_id = self.delete_model_selector.currentText().strip()
         chain_id = self.delete_chain_selector.currentText().strip()
-        if not (model_id and chain_id):
-            self.session.logger.warning("Please select a model and chain.")
-            return
-        try:
-            self.session.logger.info(f"Deleting Chain {chain_id} from Model {model_id}...")
-            run(self.session, f"select #{model_id}/{chain_id}")
-            run(self.session, "delete sel")
-            run(self.session, "select clear")
-            self.session.logger.info(f"Deleted Chain {chain_id} from Model {model_id}.")
-        except Exception as e:
-            self.session.logger.error(f"Error deleting chain: {e}")
-
-    def get_total_residues(self, model_id, chain_id):
-        model = next((m for m in self.session.models if m.id_string == model_id), None)
-        if not model:
-            raise ValueError(f"Model {model_id} not found.")
-        residues = [r for r in model.residues if r.chain_id == chain_id]
-        return len(residues)
+        if model_id and chain_id:
+            run(self.session, f"delete #{model_id}/{chain_id}")
 
     @staticmethod
     def parse_residue_range(residue_range):
         residues = []
         for part in residue_range.split(','):
             part = part.strip()
-            if not part:
-                continue
+            if not part: continue
             if '-' in part:
                 start, end = map(int, part.split('-'))
                 residues.extend(range(start, end+1))
