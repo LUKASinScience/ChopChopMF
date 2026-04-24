@@ -16,4 +16,7 @@ After installing ChopChopMF, please close and restart ChimeraX. Installation Gui
 
 ## Latest Version
 
-Version 1.1
+Version 1.2
+
+## ChopChopMF on ChimeraX Toolshed 
+[ChopChopMF on ChimeraX](https://cxtoolshed.rbvi.ucsf.edu/apps/chimeraxchopchopmf)
