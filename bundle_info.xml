@@ -5,11 +5,12 @@ When uploaded to the ChimeraX toolshed, the bundle
 will be displayed without the ChimeraX- prefix.
 -->
 
-<BundleInfo name="ChimeraX-ChopChopMF" version="1.1" package="chimerax.chopchop_mf" minSessionVersion="1" maxSessionVersion="1">
+<BundleInfo name="ChimeraX-ChopChopMF" version="1.2" package="chimerax.chopchop_mf" minSessionVersion="1" maxSessionVersion="1">
   
   <!-- Author and Contact Information -->
   <Author>Lukas W. Bauer, Ricarda Erhart ISTA Bioinformatics, Florian K. M. Schur</Author>
-  <URL>https://ist.ac.at/en/research/schur-group/</URL>
+  <URL>https://lukasinscience.github.io/ChopChopMF/</URL>
+  <Email>luki.bauer94@gmail.com</Email>
   
   <!-- Synopsis and Description -->
   <Synopsis>ChopChopMF: Multi-functional protein structure analyzation Plugin for ChimeraX</Synopsis>
