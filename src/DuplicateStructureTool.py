@@ -28,7 +28,9 @@ from Qt.QtWidgets import (
     QCheckBox, QDoubleSpinBox, QGroupBox, QTabWidget, QLineEdit
 )
 from Qt.QtGui import QFont
+from Qt.QtCore import Qt
 from chimerax.map import Volume
+from .utils import make_scrollable, make_guide_button
 
 ALL_CHAINS_LABEL = "*(All chains)"
 BLANK_CHAIN_LABEL = "(blank)"
@@ -48,9 +50,9 @@ class DuplicateStructureTool(ToolInstance):
 
     def _build_ui(self):
         self.tabs = QTabWidget()
-        self.tabs.addTab(self._build_duplicate_tab(), "Duplicate Structure")
-        self.tabs.addTab(self._build_measure_center_tab(), "Measure Center")
-        self.tabs.addTab(self._build_symmetry_tab(), "Symmetry Copies")
+        self.tabs.addTab(make_scrollable(self._build_duplicate_tab()), "Duplicate Structure")
+        self.tabs.addTab(make_scrollable(self._build_measure_center_tab()), "Measure Center")
+        self.tabs.addTab(make_scrollable(self._build_symmetry_tab()), "Symmetry Copies")
 
         layout = QVBoxLayout()
         layout.addWidget(self.tabs)
@@ -61,6 +63,8 @@ class DuplicateStructureTool(ToolInstance):
     # -------------------------
     def _build_duplicate_tab(self):
         layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignTop)
+        layout.addWidget(make_guide_button("3-modify-structure"))
         title = QLabel("Duplicate Structure Tool")
         tf = QFont(); tf.setPointSize(14); tf.setBold(True)
         title.setFont(tf)
@@ -117,6 +121,7 @@ class DuplicateStructureTool(ToolInstance):
     # -------------------------
     def _build_measure_center_tab(self):
         layout = QVBoxLayout()
+        layout.addWidget(make_guide_button("3-modify-structure"))
         title = QLabel("Measure Center of Map")
         tf = QFont(); tf.setPointSize(14); tf.setBold(True)
         title.setFont(tf)
@@ -145,6 +150,7 @@ class DuplicateStructureTool(ToolInstance):
     # -------------------------
     def _build_symmetry_tab(self):
         layout = QVBoxLayout()
+        layout.addWidget(make_guide_button("3-modify-structure"))
         title = QLabel("Symmetry Copies")
         tf = QFont(); tf.setPointSize(14); tf.setBold(True)
         title.setFont(tf)

@@ -24,6 +24,7 @@ from chimerax.ui import MainToolWindow
 from Qt.QtWidgets import QVBoxLayout, QLabel, QPushButton, QWidget, QComboBox, QTabWidget
 from Qt.QtGui import QFont, QDesktopServices
 from Qt.QtCore import QUrl, Qt
+from .utils import make_scrollable, make_guide_button
 
 class FoldseekAnalysis(ToolInstance):
 
@@ -47,6 +48,8 @@ class FoldseekAnalysis(ToolInstance):
         # First tab: Main functionality
         main_tab = QWidget()
         main_layout = QVBoxLayout()
+        main_layout.setAlignment(Qt.AlignTop)
+        main_layout.addWidget(make_guide_button("4-analyze-structure"))
 
         # Title
         title = QLabel("Foldseek: Structural Alignment and Analysis")
@@ -103,6 +106,7 @@ class FoldseekAnalysis(ToolInstance):
         ref_layout.setContentsMargins(0, 0, 0, 0)
         ref_layout.setSpacing(5)  # consistent single-line spacing
         ref_layout.setAlignment(Qt.AlignTop)
+        ref_layout.addWidget(make_guide_button("4-analyze-structure"))
 
         # Reference section title
         ref_label = QLabel("References:")
@@ -126,9 +130,9 @@ class FoldseekAnalysis(ToolInstance):
 
         ref_tab.setLayout(ref_layout)
 
-        # Add tabs to tab widget
-        tabs.addTab(main_tab, "Analysis")
-        tabs.addTab(ref_tab, "References")
+        # Add tabs to tab widget (wrapped in scroll areas so tall content can be scrolled)
+        tabs.addTab(make_scrollable(main_tab), "Analysis")
+        tabs.addTab(make_scrollable(ref_tab), "References")
 
         # Set layout
         container = QWidget()
@@ -196,14 +200,3 @@ class FoldseekAnalysis(ToolInstance):
         
         self.session.logger.info(f"Running command: {command}")
         run(self.session, command)
-
-# Register the tool in ChimeraX
-from chimerax.core.toolshed import BundleAPI
-
-class _FoldseekAnalysisBundleAPI(BundleAPI):
-
-    @staticmethod
-    def start_tool(session, tool_name):
-        return FoldseekAnalysis(session, tool_name)
-
-bundle_api = _FoldseekAnalysisBundleAPI()

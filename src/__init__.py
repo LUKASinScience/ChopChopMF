@@ -31,7 +31,7 @@ class ChopChopMFAPI(BundleAPI):
     def start_tool(session, bi, ti):
         # Log version only once per ChimeraX session
         if not ChopChopMFAPI._version_logged:
-            session.logger.info("ChopChopMF-1.1")
+            session.logger.info("ChopChopMF-1.3")
             ChopChopMFAPI._version_logged = True
 
         # Start the corresponding tool based on the name in bundle_info.xml.

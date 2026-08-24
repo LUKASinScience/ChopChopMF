@@ -45,6 +45,7 @@ from Qt.QtGui import QFont
 import xml.etree.ElementTree as ET
 import webbrowser
 import os
+from .utils import make_scrollable, make_guide_button, show_error
 
 # ---- plotting ----
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -137,8 +138,8 @@ class PDBePISA(ToolInstance):
 
         tab1 = self._build_ui_tab1()
         tab2 = self._build_ui_tab2()
-        self.tabs.addTab(tab1, "Interface Scoring")
-        self.tabs.addTab(tab2, "ΔG Filter")
+        self.tabs.addTab(make_scrollable(tab1), "Interface Scoring")
+        self.tabs.addTab(make_scrollable(tab2), "ΔG Filter")
 
         self.tabs.setCurrentIndex(0)
 
@@ -151,6 +152,8 @@ class PDBePISA(ToolInstance):
     # ---- TAB 1: Interface Scoring (unchanged) ----
     def _build_ui_tab1(self):
         layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignTop)
+        layout.addWidget(make_guide_button("4-analyze-structure"))
 
         pisa_button = QPushButton("Open PDBePISA Website")
         pisa_button.clicked.connect(lambda: webbrowser.open(self.help))
@@ -172,6 +175,16 @@ class PDBePISA(ToolInstance):
         )
         description.setWordWrap(True)
         layout.addWidget(description)
+
+        layout.addWidget(QLabel("Target model (structure the XML residues belong to):"))
+        self.pisa_tab1_model_selector = QComboBox()
+        layout.addWidget(self.pisa_tab1_model_selector)
+
+        tab1_refresh_btn = QPushButton("↻ Refresh model list")
+        tab1_refresh_btn.clicked.connect(lambda: self._populate_pisa_models(self.pisa_tab1_model_selector))
+        layout.addWidget(tab1_refresh_btn)
+
+        self._populate_pisa_models(self.pisa_tab1_model_selector)
 
         file_button = QPushButton("Select PDBePISA XML File")
         file_button.clicked.connect(self.select_file)
@@ -230,9 +243,17 @@ class PDBePISA(ToolInstance):
         )
         if xml_file:
             residues_by_chain, defattr_lines = self.parse_pdbepisa_xml(xml_file)
-            commands = self.generate_commands(residues_by_chain)
+            model_id = self.pisa_tab1_model_selector.currentText().strip() or "1"
+            commands = self.generate_commands(residues_by_chain, model_id)
             self.run_chimerax_commands(commands)
             self.write_defattr_file(defattr_lines, xml_file)
+
+    def _populate_pisa_models(self, selector):
+        """Fill a model-selector combo box with all currently open atomic models."""
+        selector.clear()
+        for mdl in self.session.models.list():
+            if hasattr(mdl, "residues"):
+                selector.addItem(mdl.id_string)
 
     def chopchop_interfaces(self):
         defattr_file, _ = QFileDialog.getOpenFileName(
@@ -240,7 +261,7 @@ class PDBePISA(ToolInstance):
             filter="Defattr Files (*.defattr)"
         )
         if defattr_file:
-            run(self.session, f"open {defattr_file}")
+            run(self.session, f'open "{defattr_file}"')
             run(self.session, "color byattribute residue_score palette 1,darkorange:2,cornflowerblue:3,purple")
             self.session.logger.info("ChopChop Interfaces coloring applied.")
 
@@ -261,7 +282,9 @@ class PDBePISA(ToolInstance):
             tree = ET.parse(xml_file)
             root = tree.getroot()
         except ET.ParseError as e:
-            self.session.logger.error(f"XML parsing error: {e}")
+            message = f"XML parsing error: {e}"
+            self.session.logger.error(message)
+            show_error(self.tool_window.ui_area, "ChopChopMF", message)
             return {}, []
 
         residues_by_chain = {}
@@ -306,7 +329,7 @@ class PDBePISA(ToolInstance):
 
         return residues_by_chain, defattr_lines
 
-    def generate_commands(self, residues_by_chain):
+    def generate_commands(self, residues_by_chain, model_id):
         if not residues_by_chain:
             self.session.logger.info("No interacting residues found or XML file is empty/incorrect.")
             return None
@@ -314,7 +337,7 @@ class PDBePISA(ToolInstance):
         chimerax_command = []
         for chain, residues in residues_by_chain.items():
             residues_str = ','.join(residues)
-            chimerax_command.append(f"#1/{chain}:{residues_str}")
+            chimerax_command.append(f"#{model_id}/{chain}:{residues_str}")
         return 'select ' + ' '.join(chimerax_command)
 
     def run_chimerax_commands(self, commands):
@@ -340,6 +363,18 @@ class PDBePISA(ToolInstance):
     # ---- TAB 2: ΔG Filter (extended with multi-XML support + neutral + plotting) ----
     def _build_ui_tab2(self):
         layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignTop)
+        layout.addWidget(make_guide_button("4-analyze-structure"))
+
+        layout.addWidget(QLabel("Target model (structure the XML residues belong to):"))
+        self.pisa_tab2_model_selector = QComboBox()
+        layout.addWidget(self.pisa_tab2_model_selector)
+
+        tab2_refresh_btn = QPushButton("↻ Refresh model list")
+        tab2_refresh_btn.clicked.connect(lambda: self._populate_pisa_models(self.pisa_tab2_model_selector))
+        layout.addWidget(tab2_refresh_btn)
+
+        self._populate_pisa_models(self.pisa_tab2_model_selector)
 
         file_btn = QPushButton("Load PDBePISA XML File")
         file_btn.clicked.connect(self.load_xml_for_dg)
@@ -591,7 +626,9 @@ class PDBePISA(ToolInstance):
             tree = ET.parse(fname)
             root = tree.getroot()
         except ET.ParseError as e:
-            self.session.logger.error(f"XML parsing error: {e}")
+            message = f"XML parsing error: {e}"
+            self.session.logger.error(message)
+            show_error(self.tool_window.ui_area, "ChopChopMF", message)
             return
 
         base = os.path.basename(fname)
@@ -621,11 +658,14 @@ class PDBePISA(ToolInstance):
     # ---- ΔG coloring (kept original flow; now with neutral baseline & band) ----
     def apply_dg_coloring(self):
         if not self.dg_xml_data:
-            self.session.logger.error("No XML file loaded for ΔG filtering.")
+            message = "No XML file loaded for ΔG filtering."
+            self.session.logger.error(message)
+            show_error(self.tool_window.ui_area, "ChopChopMF", message)
             return
 
         cutoff = self.dg_slider.value() / 100
         filter_active = self.only_above_cutoff.isChecked()
+        model_id = self.pisa_tab2_model_selector.currentText().strip() or "1"
 
         # Apply neutral baseline first (overwrites previous schemes)
         if self._neutral_on:
@@ -697,7 +737,7 @@ class PDBePISA(ToolInstance):
                 seen.add(key)
 
                 attr_lines.append(f"\t/{chain_id}:{res_num}\t{dg_val:.3f}\n")
-                to_select.append(f"#1/{chain_id}:{res_num}")
+                to_select.append(f"#{model_id}/{chain_id}:{res_num}")
 
         # Write defattr and apply
         output_file = "dg_coloring_output.defattr"
@@ -716,7 +756,7 @@ class PDBePISA(ToolInstance):
         else:
             run(self.session, 'select clear')
 
-        run(self.session, f"open {output_file}")
+        run(self.session, f'open "{output_file}"')
         # Use default palette; user can override with Apply New Color Scheme (plot uses GUI palette too)
         run(self.session, "color byattribute delta_g_score palette navy:deepskyblue:white:moccasin:goldenrod:orange:darkorange:red:firebrick range -1.0,2.5")
         self.session.logger.info("ΔG-based coloring applied.")
@@ -748,13 +788,3 @@ class PDBePISA(ToolInstance):
     def update_slider_label(self):
         val = self.dg_slider.value() / 100
         self.slider_label.setText(f"ΔG cutoff: {val:.2f} kcal/mol")
-
-
-# ---- ChimeraX bundle API glue (unchanged) ----
-from chimerax.core.toolshed import BundleAPI
-class _PDBePISABundleAPI(BundleAPI):
-    @staticmethod
-    def start_tool(session, tool_name):
-        return PDBePISA(session, tool_name)
-
-bundle_api = _PDBePISABundleAPI()

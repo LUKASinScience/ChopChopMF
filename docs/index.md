@@ -29,12 +29,11 @@ To get started with ChopChopMF, please follow these steps:
 
 1.  **Installation**: Check the [Installation Guide](installation.md) to add the tool to your ChimeraX environment.
 2.  **Basic Usage**: Visit the [Usage Page](usage.md) to see what Tools ChopChopMF offers you.
-3.  **User-cases**: Here we need you! You found ChopChopMF usefull and you want to share for what and how it was useful? Or what we could improve? Please contact us via [E-mail](https://cxtoolshed.rbvi.ucsf.edu/apps/chimeraxchopchopmf){ target="_blank" } 
+3.  **User-cases**: Here we need you! You found ChopChopMF usefull and you want to share for what and how it was useful? Or what we could improve? Please contact us via [E-mail](mailto:lukasinscience@gmail.com)
 
 ## Quick Links
 
 * **Toolshed Page**: [ChopChopMF on UCSF Toolshed](https://cxtoolshed.rbvi.ucsf.edu/apps/chimeraxchopchopmf){ target="_blank" }
-* **Paper**: Link to publication/Reference
 
 * **Documentation**: [:simple-github: GitHub Repository](https://github.com/LUKASinScience/ChopChopMF){ .md-button .md-button--primary target="_blank"}
 

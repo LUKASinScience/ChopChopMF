@@ -1,5 +1,7 @@
 site_name: ChopChopMF Guide
 site_url: https://LUKASinScience.github.io/ChopChopMF/
+repo_url: https://github.com/LUKASinScience/ChopChopMF
+repo_name: LUKASinScience/ChopChopMF
 
 theme:
   name: material

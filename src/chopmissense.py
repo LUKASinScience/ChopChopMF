@@ -32,10 +32,15 @@ from chimerax.ui import MainToolWindow
 from Qt.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QComboBox, QWidget, QFrame
 )
-import os
+from Qt.QtCore import Qt
 import requests
 import pandas as pd
+import tempfile
 import zipfile
+
+from .utils import make_scrollable, make_guide_button, busy_cursor, show_error, safe_extractall
+
+REQUEST_TIMEOUT = 20  # seconds
 
 class ChopChopMissense(ToolInstance):
     """
@@ -59,6 +64,8 @@ class ChopChopMissense(ToolInstance):
         all_models, all_chains = self._select_models_and_chains(self.session)
 
         layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignTop)
+        layout.addWidget(make_guide_button("1-alignment"))
 
         # Dropdown for selecting "modelID:chainID"
         self.combobox = QComboBox()
@@ -78,9 +85,9 @@ class ChopChopMissense(ToolInstance):
         layout.addWidget(self.uniprot_input)
 
         # Button to execute the process
-        execute_button = QPushButton("ChopChop Missense Alignment")
-        layout.addWidget(execute_button)
-        execute_button.clicked.connect(self.fetch_align_and_color)
+        self.execute_button = QPushButton("ChopChop Missense Alignment")
+        layout.addWidget(self.execute_button)
+        self.execute_button.clicked.connect(self.fetch_align_and_color)
         
         # Color bar legend
         layout.addWidget(QLabel("Scoring Scheme:"))
@@ -108,7 +115,11 @@ class ChopChopMissense(ToolInstance):
 
         container = QWidget()
         container.setLayout(layout)
-        self.tool_window.ui_area.setLayout(layout)
+
+        outer_layout = QVBoxLayout()
+        outer_layout.setContentsMargins(0, 0, 0, 0)
+        outer_layout.addWidget(make_scrollable(container))
+        self.tool_window.ui_area.setLayout(outer_layout)
 
     def _select_models_and_chains(self, session):
         """
@@ -155,6 +166,10 @@ class ChopChopMissense(ToolInstance):
         return all_models, all_chains
 
     def fetch_align_and_color(self):
+        with busy_cursor(self.execute_button):
+            self._do_fetch_align_and_color()
+
+    def _do_fetch_align_and_color(self):
         """
         Main workflow:
          1. Retrieve the selected model/chain and human UniProt ID.
@@ -172,7 +187,9 @@ class ChopChopMissense(ToolInstance):
         uniprot_id = self.uniprot_input.text().strip()
 
         if not selected_chain or not uniprot_id:
-            self.session.logger.warning("Please provide both a model/chain and a UniProt ID.")
+            message = "Please provide both a model/chain and a UniProt ID."
+            self.session.logger.warning(message)
+            show_error(self.tool_window.ui_area, "ChopChopMF", message)
             return
 
         try:
@@ -186,13 +203,17 @@ class ChopChopMissense(ToolInstance):
         # 1. Extract model chain sequence from ChimeraX
         model_sequence = self.get_chain_sequence_as_string(model_id, chain_id)
         if not model_sequence:
-            self.session.logger.warning("Failed to get chain sequence.")
+            message = "Failed to get chain sequence."
+            self.session.logger.warning(message)
+            show_error(self.tool_window.ui_area, "ChopChopMF", message)
             return
 
         # 2. Download hotspot data and extract human protein sequence from TSV
         zip_file_path, extracted_folder = self.download_hotspot_file(uniprot_id, Path.home() / "Downloads")
         if not extracted_folder:
-            self.session.logger.warning("Failed to download and extract AlphaMissense data.")
+            message = "Failed to download and extract AlphaMissense data."
+            self.session.logger.warning(message)
+            show_error(self.tool_window.ui_area, "ChopChopMF", message)
             return
 
         tsv_file = extracted_folder / f"AlphaMissense-Hotspot-{uniprot_id}.tsv"
@@ -222,13 +243,13 @@ class ChopChopMissense(ToolInstance):
         saves it as FASTA, and returns the sequence string (without header).
         """
         self.session.logger.info(f"Fetching sequence for model {model_id}, chain {chain_id}.")
-        output_dir = Path("/tmp")
+        output_dir = Path(tempfile.gettempdir())
         output_dir.mkdir(parents=True, exist_ok=True)
         sequence_path = output_dir / "missense_sequence1.fasta"
 
         try:
             run(self.session, f"sequence chain #{model_id}/{chain_id}")
-            run(self.session, f"save {sequence_path} format fasta")
+            run(self.session, f'save "{sequence_path}" format fasta')
             self.session.logger.info(f"Sequence saved to {sequence_path}.")
 
             with open(sequence_path, "r", encoding="utf-8-sig") as file:
@@ -254,14 +275,14 @@ class ChopChopMissense(ToolInstance):
 
         try:
             self.session.logger.info(f"Downloading hotspot dataset from {download_url}...")
-            response = requests.get(download_url)
+            response = requests.get(download_url, timeout=REQUEST_TIMEOUT)
             response.raise_for_status()
             with open(zip_file_path, "wb") as f:
                 f.write(response.content)
             self.session.logger.info(f"Downloaded to {zip_file_path}")
 
             with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-                zip_ref.extractall(extracted_folder)
+                safe_extractall(zip_ref, extracted_folder)
             self.session.logger.info(f"Extracted to {extracted_folder}")
             return zip_file_path, extracted_folder
 
@@ -303,7 +324,7 @@ class ChopChopMissense(ToolInstance):
 
         try:
             run(self.session, f"sequence align {sequence1},{sequence2} program muscle")
-            run(self.session, f"save {alignment_file_path} format fasta alignment 1")
+            run(self.session, f'save "{alignment_file_path}" format fasta alignment 1')
             self.session.logger.info(f"Alignment completed and saved to {alignment_file_path}.")
             return alignment_file_path
 
@@ -424,7 +445,7 @@ class ChopChopMissense(ToolInstance):
                 f.write("\n")
             self.session.logger.info(f"Attributes saved to {attribute_file}.")
 
-            run(self.session, f"open {attribute_file}")
+            run(self.session, f'open "{attribute_file}"')
             run(self.session, "color byattribute MissenseScores palette 1,navy:2,cornflowerblue:3,firebrick:4,darkred:5,yellow")
             self.session.logger.info("Coloring completed successfully.")
 

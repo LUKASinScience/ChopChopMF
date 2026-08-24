@@ -2,16 +2,16 @@ from setuptools import setup, find_packages
 
 setup(
     name="ChimeraX-ChopChopMF",
-    version="1.1",
+    version="1.3",
     description="Visualization of a sequence alignment in 3D structure",
     long_description=(
         "This tool conducts an alignment of two amino acid sequences. "
         "The result is visible in the sequence viewer and the 3D structure. "
         "The model is color-coded according to the conservation score of the alignment."
     ),
-    author="Lukas W. Bauer, ISTA Bioinformatics, Philipp Bauer",
-    author_email="Lukas.Bauer@ist.ac.at, it@ist.ac.at",
-    url="https://ist.ac.at/en/research/schur-group/",
+    author="Lukas W. Bauer, Ricarda Erhart ISTA Bioinformatics, Florian K. M. Schur",
+    author_email="lukasinscience@gmail.com",
+    url="https://lukasinscience.github.io/ChopChopMF/",
     packages=find_packages(where="src"),  # Locate all Python packages in 'src'
     package_dir={"": "src"},  # Map root package to 'src'
     data_files=[
@@ -24,12 +24,13 @@ setup(
             "src/chopgetmissense.py",
             "src/chopmissense.py",
             "src/cropstructure.py",
-            "src/duplicate.py",
+            "src/DuplicateStructureTool.py",
             "src/alphafoldinfo.py",
             "src/pdbepisa.py",
             "src/foldseekanalysis.py",
             "src/pae_analysis.py",
-             
+            "src/utils.py",
+
         ]),
         # Include icon files
         ("chimerax/chopchop_mf/icons", [

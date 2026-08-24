@@ -20,7 +20,6 @@ provide UniProt linking and annotation commands, and integrate AlphaSync data an
 import re
 import webbrowser
 import requests
-import json
 
 from chimerax.core.tools import ToolInstance
 from chimerax.core.commands import run
@@ -33,11 +32,13 @@ from Qt.QtWidgets import (
 )
 from Qt.QtGui import QFont
 from Qt.QtCore import Qt
+from .utils import make_scrollable, make_guide_button, busy_cursor, show_error
 
 
 # ---------- AlphaSync Constants ----------
 BASE_URL = "https://alphasync.stjude.org/api/v1/"
 HEADERS = {"Accept": "application/json"}
+REQUEST_TIMEOUT = 20  # seconds
 # -----------------------------------------
 
 
@@ -264,23 +265,23 @@ class AlphaFold2(ToolInstance):
         self._alphasync_log(f"UniProt ID set to {self.protein_acc}")
         
     def _build_ui(self):
-        self.tabs = QTabWidget() 
+        self.tabs = QTabWidget()
 
         # --- Tab 1: Confidence score info and coloring ---
         main_tab = self._build_main_tab()
-        self.tabs.addTab(main_tab, "pLDDT Coloring")
-        
+        self.tabs.addTab(make_scrollable(main_tab), "pLDDT Coloring")
+
         # --- Tab 2: UniProt Tab ---
         uniprot_tab = self._build_uniprot_tab()
-        self.tabs.addTab(uniprot_tab, "UniProt")
+        self.tabs.addTab(make_scrollable(uniprot_tab), "UniProt")
 
         # --- Tab 3: Databases (Quick Links) ---
         db_tab = self._build_database_tab()
-        self.tabs.addTab(db_tab, "Databases")
-        
+        self.tabs.addTab(make_scrollable(db_tab), "Databases")
+
         # --- Tab 4: AlphaSync (NEW) ---
         alphasync_tab = self._build_alphasync_tab()
-        self.tabs.addTab(alphasync_tab, "AlphaSync")
+        self.tabs.addTab(make_scrollable(alphasync_tab), "AlphaSync")
 
 
         # Set layout
@@ -293,6 +294,8 @@ class AlphaFold2(ToolInstance):
     def _build_main_tab(self):
         main_tab = QWidget()
         main_layout = QVBoxLayout()
+        main_layout.setAlignment(Qt.AlignTop)
+        main_layout.addWidget(make_guide_button("2-fetch-pdb"))
 
         title = QLabel("AlphaFold Confidence Score Information")
         title_font = QFont()
@@ -345,6 +348,8 @@ class AlphaFold2(ToolInstance):
     def _build_uniprot_tab(self):
         uniprot_tab = QWidget()
         uniprot_layout = QVBoxLayout()
+        uniprot_layout.setAlignment(Qt.AlignTop)
+        uniprot_layout.addWidget(make_guide_button("2-fetch-pdb"))
 
         title = QLabel("UniProt Annotation & Association")
         title_font = QFont()
@@ -395,6 +400,8 @@ class AlphaFold2(ToolInstance):
     def _build_database_tab(self):
         db_tab = QWidget()
         db_layout = QVBoxLayout()
+        db_layout.setAlignment(Qt.AlignTop)
+        db_layout.addWidget(make_guide_button("2-fetch-pdb"))
 
         db_layout.addWidget(QLabel("Quick Links to Databases:"))
 
@@ -421,7 +428,9 @@ class AlphaFold2(ToolInstance):
         # -------------------- Main Layout --------------------
         main_widget = QWidget()
         main_layout = QVBoxLayout()
-        
+        main_layout.setAlignment(Qt.AlignTop)
+        main_layout.addWidget(make_guide_button("2-fetch-pdb"))
+
         title = QLabel("AlphaSync Data Integration")
         font = QFont()
         font.setPointSize(12)
@@ -448,9 +457,9 @@ class AlphaFold2(ToolInstance):
         input_layout.addWidget(QLabel("UniProt ID:"))
         input_layout.addWidget(self.alphasync_input_edit)
 
-        go_btn = QPushButton("ChopChop AlphaSync Residue Data")
-        go_btn.clicked.connect(self._fetch_all_data)
-        input_layout.addWidget(go_btn)
+        self.alphasync_go_btn = QPushButton("ChopChop AlphaSync Residue Data")
+        self.alphasync_go_btn.clicked.connect(self._fetch_all_data)
+        input_layout.addWidget(self.alphasync_go_btn)
 
         main_layout.addLayout(input_layout)
 
@@ -461,6 +470,7 @@ class AlphaFold2(ToolInstance):
        
         tab_structure_widget = QWidget()
         tab_structure_layout = QVBoxLayout()
+        tab_structure_layout.setAlignment(Qt.AlignTop)
         tab_structure_widget.setLayout(tab_structure_layout)
 
         label = QLabel("AlphaFold Structures Loaded in ChimeraX")
@@ -485,7 +495,7 @@ class AlphaFold2(ToolInstance):
         btn_layout.addWidget(use_btn)
 
         tab_structure_layout.addLayout(btn_layout)
-        alphasync_tool_tabs.addTab(tab_structure_widget, "Structure Selection")
+        alphasync_tool_tabs.addTab(make_scrollable(tab_structure_widget), "Structure Selection")
         
         self._refresh_alphasync_model_list()
 
@@ -531,7 +541,7 @@ class AlphaFold2(ToolInstance):
             exp_layout.addWidget(scroll)
 
         exp_layout.addStretch()
-        alphasync_tool_tabs.addTab(tab_explanation, "Explanation")
+        alphasync_tool_tabs.addTab(make_scrollable(tab_explanation), "Explanation")
         
         main_layout.addWidget(alphasync_tool_tabs)
         main_widget.setLayout(main_layout)
@@ -564,6 +574,10 @@ class AlphaFold2(ToolInstance):
   
 
     def _fetch_all_data(self):
+        with busy_cursor(self.alphasync_go_btn):
+            self._do_fetch_all_data()
+
+    def _do_fetch_all_data(self):
         user_input = self.alphasync_input_edit.text().strip()
 
         if not user_input and not self.protein_acc:
@@ -581,13 +595,15 @@ class AlphaFold2(ToolInstance):
         try:
             url = f"{BASE_URL}protein/{self.protein_acc}"
             self._alphasync_log(f"Fetching Residue Data: {url}")
-            r = requests.get(url, headers=HEADERS)
+            r = requests.get(url, headers=HEADERS, timeout=REQUEST_TIMEOUT)
             r.raise_for_status()
             data = r.json()
             self._populate_residue_table(data)
             self._alphasync_log("Residue data successfully loaded.")
         except Exception as e:
-            self._alphasync_log(f"Error fetching Residue Data: {e}")
+            message = f"Error fetching Residue Data: {e}"
+            self._alphasync_log(message)
+            show_error(self.tool_window.ui_area, "ChopChopMF", message)
             self.tab_residue_table.clearContents()
             self.tab_residue_table.setRowCount(0)
 
@@ -651,11 +667,15 @@ class AlphaFold2(ToolInstance):
 
         # 1. Input checks
         if not uniprot_id:
-            self.session.logger.error("UniProt ID is required.")
+            message = "UniProt ID is required."
+            self.session.logger.error(message)
+            show_error(self.tool_window.ui_area, "ChopChopMF", message)
             return
 
         if not chain_spec:
-            self.session.logger.error("A model chain must be selected.")
+            message = "A model chain must be selected."
+            self.session.logger.error(message)
+            show_error(self.tool_window.ui_area, "ChopChopMF", message)
             return
 
         # 2. Execute Command
@@ -670,15 +690,3 @@ class AlphaFold2(ToolInstance):
         except Exception as e:
             self.session.logger.error(f"Failed to run UniProt command: {e}")
 
-
-# --- Register the tool ---
-from chimerax.core.toolshed import BundleAPI
-
-
-class _AlphaFoldInfoBundleAPI(BundleAPI):
-    @staticmethod
-    def start_tool(session, tool_name):
-        return AlphaFold2(session, tool_name)
-
-
-bundle_api = _AlphaFoldInfoBundleAPI()

@@ -12,11 +12,11 @@ Full Documentation, Installation Guide and Usage you can find here in the: [Chop
 
 ## Installation 
 
-After installing ChopChopMF, please close and restart ChimeraX. Installation Guide is within the: Installation Guide is within the [ChopChopMF Guide](https://lukasinscience.github.io/ChopChopMF/installation/)
+After installing ChopChopMF, please close and restart ChimeraX. The full installation guide is within the [ChopChopMF Guide](https://lukasinscience.github.io/ChopChopMF/installation/)
 
 ## Latest Version
 
-Version 1.2
+Version 1.3 — see [CHANGELOG.md](CHANGELOG.md) for what's new.
 
 ## ChopChopMF on ChimeraX Toolshed 
 [ChopChopMF on ChimeraX](https://cxtoolshed.rbvi.ucsf.edu/apps/chimeraxchopchopmf)

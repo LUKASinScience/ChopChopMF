@@ -33,10 +33,13 @@ from Qt.QtWidgets import (
 )
 from Qt.QtCore import Qt
 import webbrowser
-import os
 import requests
 import zipfile
 import pandas as pd
+
+from .utils import make_scrollable, make_guide_button, busy_cursor, show_error, safe_extractall, get_settings
+
+REQUEST_TIMEOUT = 20  # seconds
 
 
 class ChopChopGetMissense(ToolInstance):
@@ -58,6 +61,8 @@ class ChopChopGetMissense(ToolInstance):
         # First tab: Main functionality
         main_tab = QWidget()
         main_layout = QVBoxLayout()
+        main_layout.setAlignment(Qt.AlignTop)
+        main_layout.addWidget(make_guide_button("2-fetch-pdb"))
 
         # UniProt ID
         self.uniprot_input = QLineEdit()
@@ -66,7 +71,7 @@ class ChopChopGetMissense(ToolInstance):
 
         # Download folder path
         self.download_path_input = QLineEdit()
-        self.download_path_input.setText(str(Path.home() / "Downloads"))
+        self.download_path_input.setText(get_settings(self.session).download_dir)
         main_layout.addWidget(QLabel("Enter download folder path for fetched Files and Attribute file for Scoring Scheme:"))
         main_layout.addWidget(self.download_path_input)
 
@@ -110,9 +115,9 @@ class ChopChopGetMissense(ToolInstance):
         self.use_uploaded_tsv_checkbox.toggled.connect(toggle_inputs)
 
         # Execute button
-        execute_button = QPushButton("ChopChop Missense PDB")
-        execute_button.clicked.connect(self.run_script)
-        main_layout.addWidget(execute_button)
+        self.execute_button = QPushButton("ChopChop Missense PDB")
+        self.execute_button.clicked.connect(self.run_script)
+        main_layout.addWidget(self.execute_button)
 
         # Color bar legend
         main_layout.addWidget(QLabel("Scoring Scheme:"))
@@ -142,6 +147,7 @@ class ChopChopGetMissense(ToolInstance):
         ref_layout.setContentsMargins(0, 0, 0, 0)
         ref_layout.setSpacing(5)
         ref_layout.setAlignment(Qt.AlignTop)
+        ref_layout.addWidget(make_guide_button("2-fetch-pdb"))
 
         ref_layout.addWidget(QLabel("AlphaMissense PDB and Scores are fetched from"))
         hegelab_button = QPushButton("Hegelab AlphaMissense")
@@ -155,9 +161,9 @@ class ChopChopGetMissense(ToolInstance):
 
         ref_tab.setLayout(ref_layout)
 
-        # Add tabs
-        tabs.addTab(main_tab, "Analysis")
-        tabs.addTab(ref_tab, "References")
+        # Add tabs (each wrapped in a scroll area so tall content can be scrolled)
+        tabs.addTab(make_scrollable(main_tab), "Analysis")
+        tabs.addTab(make_scrollable(ref_tab), "References")
 
         container = QWidget()
         container_layout = QVBoxLayout()
@@ -182,7 +188,12 @@ class ChopChopGetMissense(ToolInstance):
                 self.model_selector.addItem(label, model)
 
     def run_script(self):
+        with busy_cursor(self.execute_button):
+            self._do_run_script()
+
+    def _do_run_script(self):
         download_dir = Path(self.download_path_input.text().strip())
+        get_settings(self.session).download_dir = str(download_dir)
 
         if not download_dir.exists():
             try:
@@ -193,72 +204,83 @@ class ChopChopGetMissense(ToolInstance):
 
         uniprot_id = self.uniprot_input.text().strip()
         if not uniprot_id:
-            self.session.logger.warning("Please provide a UniProt ID.")
+            message = "Please provide a UniProt ID."
+            self.session.logger.warning(message)
+            show_error(self.tool_window.ui_area, "ChopChopMF", message)
             return
 
         self.session.logger.info(f"Starting download for UniProt ID: {uniprot_id}")
         zip_file_path, extracted_folder = self.download_hotspot_file(uniprot_id, download_dir)
 
-        if zip_file_path and extracted_folder:
-            # Try to get the TSV file from the extracted folder
-            downloaded_tsv = next(extracted_folder.glob("*.tsv"), None)
+        if not (zip_file_path and extracted_folder):
+            message = f"Failed to download AlphaMissense hotspot data for UniProt ID '{uniprot_id}'."
+            self.session.logger.warning(message)
+            show_error(self.tool_window.ui_area, "ChopChopMF", message)
+            return
 
-            if self.use_uploaded_tsv_checkbox.isChecked():
-                # Use the user-uploaded TSV
-                tsv_file = Path(self.file_path_input.text().strip())
-                if not tsv_file.exists():
-                    self.session.logger.warning("Provided TSV file does not exist. Aborting.")
-                    return
+        # Try to get the TSV file from the extracted folder
+        downloaded_tsv = next(extracted_folder.glob("*.tsv"), None)
 
-                # Determine chain length from the selected open model
-                model_idx = self.model_selector.currentIndex()
-                if model_idx < 0:
-                    self.session.logger.warning("No open PDB model selected. Aborting.")
-                    return
+        if self.use_uploaded_tsv_checkbox.isChecked():
+            # Use the user-uploaded TSV
+            tsv_file = Path(self.file_path_input.text().strip())
+            if not tsv_file.exists():
+                self.session.logger.warning("Provided TSV file does not exist. Aborting.")
+                return
 
-                open_model = self.model_selector.itemData(model_idx)
-                if not open_model:
-                    self.session.logger.warning("Selected model is invalid. Aborting.")
-                    return
+            # Determine chain length from the selected open model
+            model_idx = self.model_selector.currentIndex()
+            if model_idx < 0:
+                self.session.logger.warning("No open PDB model selected. Aborting.")
+                return
 
-                chain_length = self.get_chain_length_from_model(open_model)
-                self.session.logger.info(f"Determined chain length from open model: {chain_length}")
+            open_model = self.model_selector.itemData(model_idx)
+            if not open_model:
+                self.session.logger.warning("Selected model is invalid. Aborting.")
+                return
 
-                # Generate the defattr file
-                self.process_uploaded_tsv(tsv_file, extracted_folder / "AM_score.defattr", chain_length)
-            else:
-                # Automatic mode: use downloaded TSV, parse PDB from extracted folder
-                if not downloaded_tsv:
-                    self.session.logger.warning("No TSV file found in the extracted folder.")
-                    return
-                tsv_file = downloaded_tsv
-                pdb_files = list(extracted_folder.glob("*.pdb"))
-                if not pdb_files:
-                    self.session.logger.warning("No PDB files found in the extracted folder.")
-                    return
-                pdb_file = pdb_files[0]
-                chain_length = self.get_chain_length_from_pdb_file(pdb_file)
-                self.session.logger.info(f"Determined chain length from downloaded PDB: {chain_length}")
+            chain_length = self.get_chain_length_from_model(open_model)
+            self.session.logger.info(f"Determined chain length from open model: {chain_length}")
 
-                # Generate the defattr file
-                self.generate_defattr_file(tsv_file, extracted_folder / "AM_score.defattr", chain_length)
-
-            # Step 4: Load PDB files into ChimeraX
+            # Generate the defattr file
+            self.process_uploaded_tsv(tsv_file, extracted_folder / "AM_score.defattr", chain_length)
+        else:
+            # Automatic mode: use downloaded TSV, parse PDB from extracted folder
+            if not downloaded_tsv:
+                message = "No TSV file found in the extracted folder."
+                self.session.logger.warning(message)
+                show_error(self.tool_window.ui_area, "ChopChopMF", message)
+                return
+            tsv_file = downloaded_tsv
             pdb_files = list(extracted_folder.glob("*.pdb"))
             if not pdb_files:
-                self.session.logger.warning("No PDB files found in the extracted folder.")
+                message = "No PDB files found in the extracted folder."
+                self.session.logger.warning(message)
+                show_error(self.tool_window.ui_area, "ChopChopMF", message)
                 return
-            for pdb_file in pdb_files:
-                run(self.session, f"open {pdb_file}")
+            pdb_file = pdb_files[0]
+            chain_length = self.get_chain_length_from_pdb_file(pdb_file)
+            self.session.logger.info(f"Determined chain length from downloaded PDB: {chain_length}")
 
-            # Step 5: Apply coloring using defattr file
-            run(self.session, f"open {extracted_folder / 'AM_score.defattr'}")
-            self.session.logger.info("Applied coloring using AM_score.defattr")
+            # Generate the defattr file
+            self.generate_defattr_file(tsv_file, extracted_folder / "AM_score.defattr", chain_length)
 
-            # Step 6: Apply coloring with palette
-            run(self.session, "color byattribute AM_score palette 1,navy:2,cornflowerblue:3,red:4,darkred:5,white")
-            self.session.logger.info("Applied color byattribute with custom palette")
-            self.session.logger.info(f"Process completed successfully for UniProt ID {uniprot_id}")
+        # Step 4: Load PDB files into ChimeraX
+        pdb_files = list(extracted_folder.glob("*.pdb"))
+        if not pdb_files:
+            self.session.logger.warning("No PDB files found in the extracted folder.")
+            return
+        for pdb_file in pdb_files:
+            run(self.session, f'open "{pdb_file}"')
+
+        # Step 5: Apply coloring using defattr file
+        run(self.session, f'open "{extracted_folder / "AM_score.defattr"}"')
+        self.session.logger.info("Applied coloring using AM_score.defattr")
+
+        # Step 6: Apply coloring with palette
+        run(self.session, "color byattribute AM_score palette 1,navy:2,cornflowerblue:3,red:4,darkred:5,white")
+        self.session.logger.info("Applied color byattribute with custom palette")
+        self.session.logger.info(f"Process completed successfully for UniProt ID {uniprot_id}")
 
     def download_hotspot_file(self, uniprot_id, download_dir):
         base_url = "https://alphamissense.hegelab.org/download_hot"
@@ -268,14 +290,14 @@ class ChopChopGetMissense(ToolInstance):
 
         try:
             self.session.logger.info(f"Downloading hotspot dataset from {download_url}...")
-            response = requests.get(download_url)
+            response = requests.get(download_url, timeout=REQUEST_TIMEOUT)
             response.raise_for_status()
             with open(zip_file_path, "wb") as f:
                 f.write(response.content)
             self.session.logger.info(f"Downloaded to {zip_file_path}")
 
             with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-                zip_ref.extractall(extracted_folder)
+                safe_extractall(zip_ref, extracted_folder)
             self.session.logger.info(f"Extracted to {extracted_folder}")
             return zip_file_path, extracted_folder
         except Exception as e:

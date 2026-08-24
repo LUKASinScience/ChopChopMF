@@ -5,6 +5,11 @@ ChopChopMF is a user-friendly GUI plug-in for ChimeraX designed to make protein 
 !!! info "No Commands Needed"
     Every action in ChopChopMF triggers the underlying ChimeraX engine automatically, removing the need for complicated command-line syntax.
 
+!!! tip "How to use this guide"
+    Every tool in ChopChopMF has a **📖 Open Guide / Tutorial** button at the top of its window. Clicking it opens this page in your browser, jumped to the right tool's category, so you can keep the step-by-step instructions open next to ChimeraX while you work.
+
+    Each tool below is explained the same way: a short **"What it does"**, then a **numbered walkthrough** with a concrete example, so you can follow along with your own structure. If you get stuck, look for the `???`/`!!!` boxes — they call out tips, warnings, and common pitfalls specific to that step.
+
 ## The Toolbar
 
 After [Installation of ChopChopMF](installation.md) and Restarting ChimeraX, you will find ChopChopMF and all it's tools in the Toolbar:
@@ -114,6 +119,17 @@ The semi conservation of Amino acids is in ChopChopMF as in the following table 
 ![Sequence](assets/ChopAlignIcon.png){ align=left width="60" }
 **Sequence** Performs a 1:1 sequence alignment using MUSCLE software to evaluate conservation levels.
 
+**How to use it:**
+
+1. Open a structure in ChimeraX (any `.pdb`/`.cif` you have loaded).
+2. In the **Sequence** tool, pick the model and chain you want to align from the dropdown, e.g. `Model 1, Chain A`. Click **↻ Refresh model list** if you opened the structure after starting the tool.
+3. In the text field, enter either:
+    * a raw amino acid sequence (e.g. `MVLSPADKTNVKAAWGKVGAHAGEYGAEALERMFLSFPTTKTYFPHF...`), or
+    * a UniProt ID (e.g. `P69905`, human hemoglobin subunit alpha) — ChopChopMF detects the digits and fetches the FASTA sequence for you automatically.
+4. Click **ChopChop SequenceAlignment**. The structure is colored by conservation using the scoring scheme shown below the button.
+5. (Optional) Set a download folder — it's remembered for next time — and click **Download** to save the alignment CSV/defattr files there.
+6. (Optional) Type new color names (e.g. `red`, `gold`) into the four fields and click **Apply New Color Scheme** to recolor without redoing the alignment.
+
 ??? tip "Conservation against a database? Try ConSurf"
     If you want to run a database against your protein, to see how the conservation is among a several proteins/isoforms/within a protein class, you should try and use ConSurf
 
@@ -130,6 +146,13 @@ The semi conservation of Amino acids is in ChopChopMF as in the following table 
 ![Missense](assets/ChopMissenseIcon.png){ align=left width="60" }
 
 **Missense** Performs a multiple sequence alignment of a non-human protein with a human sequence to plot AlphaMissense scores.
+
+**How to use it:**
+
+1. Open the non-human structure you want to score (e.g. a mouse or zebrafish ortholog) in ChimeraX.
+2. In the **Missense** tool, select the model/chain of the non-human protein, e.g. `1:A`.
+3. Enter the **human** ortholog's UniProt ID, e.g. `P04637` (human TP53) if your structure is a Trp53 ortholog.
+4. Click **ChopChop Missense Alignment**. ChopChopMF aligns both sequences, then colors only the residues that match the human sequence exactly with the corresponding AlphaMissense score; everything else is colored yellow ("no score").
 
 The following you should take into consideration, if you are using the **Missense** Tool
 
@@ -161,11 +184,18 @@ Access structural databases through a simplified interface that skips complex fe
 
 === "Analysis"
 
-    * Enter Uniprot ID of Human Protein (for download path, your `Downloads` is the Default setting)
+    **How to use it:**
 
-    Or
+    1. Enter the UniProt ID of a **human** protein, e.g. `P38398` (BRCA1).
+    2. Check/adjust the download folder — it defaults to `Downloads` and is remembered between ChimeraX sessions.
+    3. Click **ChopChop Missense PDB**. ChopChopMF downloads the matching structure and AlphaMissense scores, opens the structure in ChimeraX, and colors it by the scoring scheme shown below.
 
-    * Select TSV file, containing the AlphaMissense Scoring information for upload and select the matching .pdb file
+    **Already have your own TSV?**
+
+    1. Tick **Use uploaded AlphaMissense TSV file**.
+    2. Click **Browse** and select your `.tsv` file.
+    3. Select the open ChimeraX model to use for chain-length detection (click **↻ Refresh model list** if it's not listed yet).
+    4. Click **ChopChop Missense PDB** as above.
 
 
 === "References"
@@ -190,8 +220,12 @@ AlphaMissense Structures and Scores are downloaded through the:
 <br clear="left">
 
 ![AlphaFold2](assets/AlphaFoldIconChop.png){ align=left width="60" }
-**AlphaFold2** Accesses the AlphaFold database directly, plotting pLDDT scores and providing AlphaSync residue information. 
-=== "AlphaFold"
+**AlphaFold2** Accesses the AlphaFold database directly, plotting pLDDT scores and providing AlphaSync residue information.
+
+!!! info "Two windows open at once — that's expected"
+    Clicking the **AlphaFold2** toolbar button opens **two** things: ChimeraX's own built-in **AlphaFold** tool (for fetching/searching/predicting structures) *and* ChopChopMF's **AlphaFold Info** panel described below, which adds pLDDT coloring, UniProt association, and AlphaSync data on top. You'll typically use both together — fetch or open a structure in the first, then color/annotate it in the second.
+
+=== "AlphaFold (built into ChimeraX)"
 
     * **Fetch** Open the database structure with the most similar sequence. Switch `Sequence` to UniProt identifer, to use UniProt ID
 
@@ -202,9 +236,11 @@ AlphaMissense Structures and Scores are downloaded through the:
 
 === "pLDDT Coloring"
 
-    * Color by `B-Factor` your prediction with the pLDDT score
+    **How to use it:**
 
-    * The AlphaFold Confidence Score Information is given for each color
+    1. Open or fetch an AlphaFold structure (via the tab above, or any model with B-factor = pLDDT).
+    2. Select it in the **Select model to color** dropdown, e.g. `#1 AF-P04637-F1`.
+    3. Click **Color selected model by AlphaFold2 pLDDT score**. The structure is colored per-residue using the confidence scale shown above the button (dark orange = very low, blue = very high).
 
 === "UniProt"
 
@@ -212,13 +248,11 @@ AlphaMissense Structures and Scores are downloaded through the:
     
         UniProt Annotation & Association can only be plotted by ChopChopMF if they are provided by UniProt!
 
-    1. Select an opened Model, this must be from the AlphaFold Protein Structure Database or AlphaFold2
+    **How to use it:**
 
-    2. If you selected a model from the AlphaFold Protein Structure Database ChopChopMF can enter already the UniProt ID, otherwise please enter.
-
-
-
-
+    1. Select the AlphaFold structure from the list, e.g. `#1 AF-P04637-F1`, and click **Use Selected Model** — ChopChopMF fills in the UniProt ID and chain for you.
+    2. If your model wasn't fetched from the AlphaFold database, type the UniProt ID yourself (e.g. `P04637`) and pick the chain manually.
+    3. Click **4. Fetch UniProt Annotation & Associate** to pull the UniProt annotation and link it to that chain.
 
 === "Databases"
 
@@ -230,16 +264,12 @@ AlphaMissense Structures and Scores are downloaded through the:
 
     [ ![AlphaSync](assets/AlphaSync.png) <br> **AlphaSync** ](https://alphasync.stjude.org/){:target="_blank"}
 
-    1. Select an opened Model, this must be from the AlphaFold Protein Structure Database or AlphaFold2
+    **How to use it:**
 
-    Or
-
-    1. Enter UniProt ID
-
-    2. Run ***ChopChop AlphaSync Residue Data***
-
-    3. By Clicking on `Residue Data` you get datatable. Under `Explanations` The Paramaters are explained
-   
+    1. Go to the **Structure Selection** sub-tab, select an open AlphaFold structure (e.g. `#1 AF-P04637-F1`) and click **Use Selected Model** — or just type a UniProt ID (e.g. `P04637`) directly into the field above.
+    2. Click **ChopChop AlphaSync Residue Data**.
+    3. Open the **Residue Data** sub-tab to see the per-residue table (pLDDT, SASA, RSA, surface/core, disorder, secondary structure, contacts).
+    4. Not sure what a column means? Check the **Explanation** sub-tab — click any parameter name to expand its definition.
 
 
 
@@ -252,9 +282,14 @@ Essential tools for preparing models for downstream analysis.
 ![Crop](assets/crop.png){ align=left width="60" }
 **Crop Structure** Select a structure and residue range to keep; the tool automatically deletes all others.
 
-=== "CropResidues"
+=== "Crop Residues"
 
-    Set the Residues (Residue Range) you want to keep and remove alll others from the Chain.
+    **How to use it:**
+
+    1. Select the **model** and **chain** you want to crop, e.g. `Model 1`, chain `A`. Click **↻ Refresh model list and chains** if it's not listed.
+    2. In **Residue range to keep**, enter the residues you want to *keep* — everything else is removed. Example: `1-120,150-200` keeps residues 1 through 120 and 150 through 200, and deletes everything in between and after.
+    3. (Optional but recommended) Click **Hide Deletion Preview** first — this hides the residues that *would* be removed without deleting anything, so you can check the range is right. Click it again ("Reset Preview") to undo the preview.
+    4. Click **ChopChop Crop** to actually delete the residues outside your range.
 
     !!! tip "ChopChop Crop before Foldseek"
         Remove residues you are not interested before using Foldseek to focus on the parts you are interested in of your protein. Further removal of large disordered domains can help to improve Foldseek results in some cases
@@ -262,10 +297,13 @@ Essential tools for preparing models for downstream analysis.
 
 === "Delete Chain"
 
-    You want to get rid of a whole Chain? Just select and delet it.
+    **How to use it:**
+
+    1. Select the **model** and **chain** you want to remove entirely, e.g. `Model 1`, chain `B`.
+    2. Click **Delete Chain**.
 
     !!! warning "Deletions are terminal"
-        If you delet Residues or Chains, you can't undo this. 
+        If you delete residues or chains, you can't undo this. 
 
 
 
@@ -277,9 +315,12 @@ Essential tools for preparing models for downstream analysis.
 
 === "Duplicate Structure"
 
-    You want to duplicate your structure? Just select it and **ChopChop Double**
+    **How to use it:**
 
-    The duplication works on a Chain level, if you wish to give the copy a slight offset to the original, tick `Apply offset to duplicate`. This way you can find it easier.
+    1. Select the **model** to duplicate, e.g. `Model 1`.
+    2. Select a **chain**, or leave it on `*(All chains)` to duplicate the whole model.
+    3. (Optional) Tick **Apply offset to duplicate** and set ΔX/ΔY/ΔZ, e.g. `50` Å in ΔX, to place the copy visibly next to the original instead of directly on top of it.
+    4. Click **ChopChop Double**.
 
     !!! tip "ChopChop Double before ChopChop Crop"
     
@@ -288,19 +329,19 @@ Essential tools for preparing models for downstream analysis.
 
 === "Measure Center"
 
-    You have a Map and want to fit in several of your proteins in a symetric way into this Map? 
+    **How to use it:**
 
-    Measure the Center of the Map! The center of the Map will be displaced in the Log.
+    1. Select the **map/volume** you want to center on, e.g. `#2 (my_map.mrc)`. Click **↻ Refresh maps** if it isn't listed yet.
+    2. Click **ChopChop Measure Center**. The XYZ center coordinates are printed to the ChimeraX **Log** — keep the Log window open so you can copy them in the next step.
 
 === "Symmetry Copies"
 
-    You `ChopChop Measured Center` of your map?
+    **How to use it:**
 
-    Copy from the log the XYZ coordinates and `Paste XYZ for center`. `Apply` or set the Center manually.
-
-    Select the structure and your Symmetry.
-
-    **ChopChop Symmetry Copies**
+    1. Ran **Measure Center** above? Copy the XYZ coordinates from the Log, paste them into **Paste XYZ for center** (e.g. `353.79, 353.79, 333.95`) and click **Apply**. Otherwise, type the Center X/Y/Z values manually.
+    2. Select the **structure model** to copy, e.g. `Model 1`.
+    3. Select the **symmetry group**, e.g. `C2` for a 2-fold symmetric assembly, or `D3` for a dihedral trimer-of-dimers.
+    4. Click **ChopChop Symmetry Copies**.
 
 
 
@@ -319,19 +360,26 @@ A platform for both inexperienced and advanced users to analyze complexes effici
 === "1. PAE Contacts"
 
     !!! warning "Only one Model can be opened in ChimeraX for evaluating the PAE Contacts!"
-        Be aware that only one model/prediction of AlphaFold2 or AlphaFold3 can be opened. Besides the .pdb or .cif structure file you also need the matching .jason file from the prediction!
+        Be aware that only one model/prediction of AlphaFold2 or AlphaFold3 can be opened. Besides the .pdb or .cif structure file you also need the matching .json file from the prediction!
 
-    Select the Chais you want to investigate, set the distance, recommended is not to go above 8Å (since protein-protein interactions above are too far away from each other)
+    **How to use it:**
 
-    **ChopChop PAE**
+    1. Open your predicted complex (e.g. an AlphaFold-Multimer `.cif`) — it must be the *only* open model.
+    2. Click **Load .json file** and select the matching PAE `.json` from the same prediction. This opens ChimeraX's own **AlphaFold Error Plot** tool.
+    3. Click **↻ Refresh model list**, then select the two chains you want to check for contacts, e.g. chain `A` and chain `B`.
+    4. Set the **distance** cutoff — `5` Å is a good starting point; avoid going above `8` Å, since protein-protein interactions further apart than that are unlikely to be real contacts.
+    5. Click **ChopChop PAE**. ChopChopMF draws pseudobonds between residue pairs whose predicted error is below the cutoff.
 
 === "2. PAE Contact Residues"
 
-    You saw some interesting or promising results with **ChopChop PAE** ? Now you would like to see the side chains of the pseudobonds with a good (blue) score?
+    You saw some interesting or promising results with **ChopChop PAE**? Now you would like to see the side chains of the pseudobonds with a good (blue) score?
 
-    Just **ChopChop PAE interaction Residues** and have a closer look
+    **How to use it:**
 
-    A much more preciser analysis of the PAE can be perfromed outside the ChimeraX environment with the [  **PAE Viewer** ](https://pae-viewer.uni-goettingen.de/){:target="_blank"}
+    1. Run **ChopChop PAE** in the first tab first, so a "PAE Contacts" pseudobond model exists.
+    2. Click **ChopChop PAE interaction Residues**. The contact residues are selected, shown as sticks, and colored by chain/heteroatom for a closer look.
+
+    A much more precise analysis of the PAE can be performed outside the ChimeraX environment with the [  **PAE Viewer** ](https://pae-viewer.uni-goettingen.de/){:target="_blank"}
 
 
 <br clear="left">
@@ -365,19 +413,16 @@ A platform for both inexperienced and advanced users to analyze complexes effici
 
     Once you have your XML file, use the **Interface Scoring** tab as follows:
 
-    Scoring & Coloring Steps
-
-    * **Load Data:** Click **Select PDBePISA XML File** and upload the file you just downloaded.
-
-    * **Map Interfaces:** Click **ChopChop PISA Interfaces** to map the residues to your structure.
-
-    * **Scoring Scheme:** The tool automatically categorizes residues based on:
+    1. **Select the target model:** pick the model the XML residues belong to, e.g. `Model 1`. Click **↻ Refresh model list** if it isn't listed.
+    2. **Load Data:** Click **Select PDBePISA XML File** and upload the file you just downloaded.
+    3. **Map Interfaces:** Loading the file already selects and colors the interface residues in darkorange. To (re-)apply the full 3-way scoring, click **ChopChop PISA Interfaces** and select the `_output.defattr` file that was written next to your XML.
+    4. **Scoring Scheme:** The tool automatically categorizes residues based on:
 
         * <span style="color:darkorange">■</span> **Buried:** Residues hidden in the interface.
         * <span style="color:cornflowerblue">■</span> **Hydrogen Bond:** Specific polar interactions.
         * <span style="color:purple">■</span> **Salt Bridge:** Electrostatic interactions between charged side chains.
 
-    * **Update Visuals:** You can type new color names (e.g., `red`, `gold`, `blue`) in the text fields and click `Apply New Color Scheme`.
+    5. **Update Visuals (optional):** Type new color names (e.g., `red`, `gold`, `blue`) in the text fields and click **Apply New Color Scheme**.
 
     ---
 
@@ -390,15 +435,11 @@ A platform for both inexperienced and advanced users to analyze complexes effici
 
     **1. Setting up the Filter**
 
-    Once your PDBePISA XML is loaded, you can fine-tune the visualization using these parameters:
-
-    * **Load XML:** Use **Load PDBePISA XML File** to bring in your data.
-
-    * **Append Mode:** Toggle this to accumulate residues across multiple loaded interfaces.
-
-    * **Neutral band (+/- ε):** Define a baseline (default `0.01 kcal/mol`) for residues that contribute negligibly to the interface. These will be colored `lightgrey`.
-
-    * **ΔG Cutoff:** Use the slider to filter out residues with low solvation energy. Checking **Only show residues ΔG cutoff** will hide everything below your specified threshold.
+    1. **Select the target model:** pick the model the XML residues belong to, e.g. `Model 1`.
+    2. **Load XML:** Click **Load PDBePISA XML File** to bring in your data. You can load more than one XML (e.g. for several interfaces of the same complex) and switch between them with the **Active XML file** dropdown.
+    3. **Append Mode (optional):** Toggle this to accumulate residues across *all* loaded XMLs at once instead of just the active one.
+    4. **Neutral band (optional):** Leave **Neutral band (±ε)** checked to keep near-zero residues (default `ε = 0.01 kcal/mol`) colored `lightgrey` as a baseline, so only meaningfully stabilizing/destabilizing residues stand out.
+    5. **ΔG Cutoff:** Use the slider to set a threshold, e.g. `0.50 kcal/mol`. With **Only show residues ≥ cutoff** checked, residues below that are excluded from coloring.
 
     ---
 
@@ -406,14 +447,9 @@ A platform for both inexperienced and advanced users to analyze complexes effici
 
     This module maps energy values to a specific color palette to highlight "hotspots" in the interface:
 
-   
-    **Visualization Steps**
-
-    1. **ChopChop ΔG Coloring:** Apply the energy-based colors to your structure in ChimeraX.
-
-    2. **Plot ΔGValues:** Generate a graphical plot of the energy distribution across the interface residues.
-
-    3. **Customizing the Palette:** You can modify the color assigned to each energy range. 
+    1. Click **ChopChop ΔG Coloring** to apply the energy-based colors to your structure in ChimeraX.
+    2. Click **Plot ΔG Values** to open a bar chart, scatter plot, and value list of every colored residue — handy for picking a good cutoff.
+    3. (Optional) Adjust the color fields under **ΔG Palette** and click **Apply New Color Scheme** to recolor with your own palette; the plot follows the same colors.
 
     ---
 
@@ -436,6 +472,12 @@ A platform for both inexperienced and advanced users to analyze complexes effici
 ![Foldseek](assets/foldseeklogo.png){ align=left width="60" }
 **Foldseek Analysis** Provides a GUI for structural homolog searches within ChimeraX.
 
+**How to use it:**
+
+1. Select the **target database**: `PDB (default)` to search experimental structures, or `AlphaFold DB (afdb50)` to search predicted structures.
+2. Select the **model** and **chain** to search with, e.g. `1:A`. Click **↻ Refresh model list** if needed.
+3. Click **ChopChop Foldseek**. ChimeraX runs the structural search and reports the closest structural homologs.
+
 !!! tip "Use the Crop Structure Tool before Foldseek"
 
     Foldseek searches will be more precise and efficient if you crop away all unecessary residues within your structure, so the focus is on your **Domain of Interest**
@@ -456,6 +498,11 @@ Foldseek was great, but you are looking for more tools? There is more to explore
 ### 5. Undo
 
 ![Undo](assets/ChopUndo.png){ align=left width="60" }
-**Undo** Provides a safety function to revert an action besides structural modifications, which is not possible in ChimeraX.
+**Undo** A one-click shortcut for ChimeraX's own `undo` command, right in the ChopChopMF toolbar.
+
+**How to use it:** Click **Undo** to revert your last action.
+
+!!! warning "Not everything can be undone"
+    ChimeraX's undo covers most commands, but **not** destructive structural edits made through ChopChopMF's **Crop Structure** or **Duplicate Structure → Delete Chain** tools — those deletions are terminal (see the warnings in [Modify Structure](#3-modify-structure) above).
 
 <br clear="left">

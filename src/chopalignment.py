@@ -20,11 +20,17 @@ from Qt.QtWidgets import (
     QPushButton, QHBoxLayout, QFileDialog, QFrame
 )
 from Qt.QtGui import QAction
+from Qt.QtCore import Qt
 import csv
 import os
+import re
 import requests
-import distutils.dir_util
 import shutil
+
+from .utils import make_scrollable, make_guide_button, busy_cursor, show_error, get_settings
+
+REQUEST_TIMEOUT = 20  # seconds
+ALLOWED_SEQUENCE_CHARS = re.compile(r'^[A-Za-z0-9]*$')
 
 
 class ChopChopMFalignment(ToolInstance):
@@ -43,10 +49,12 @@ class ChopChopMFalignment(ToolInstance):
         all_models, all_chains, all_modl_index, all_chains_with_index = self.select_models_and_chains(self.session)
 
         layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignTop)
+        layout.addWidget(make_guide_button("1-alignment"))
         self.combobox = QComboBox()
         for x in all_chains:
             model_id, chain_id = x.split(":")
-            self.combobox.addItem(f"Model {model_id}, Chain {chain_id}")
+            self.combobox.addItem(f"Model {model_id}, Chain {chain_id}", (model_id, chain_id))
 
         layout.addWidget(QLabel("Choose model ID and chain ID for alignment"))
         layout.addWidget(self.combobox)
@@ -59,11 +67,11 @@ class ChopChopMFalignment(ToolInstance):
         layout.addWidget(QLabel("Enter an amino acid sequence or UniProt ID to be aligned to your model"))
         layout.addWidget(self.text1)
 
-        button1 = QPushButton("ChopChop SequenceAlignment")
-        layout.addWidget(button1)
+        self.align_button = QPushButton("ChopChop SequenceAlignment")
+        layout.addWidget(self.align_button)
 
         self.download_path_input = QLineEdit()
-        self.download_path_input.setText(str(Path.home() / "Downloads"))
+        self.download_path_input.setText(get_settings(self.session).download_dir)
         layout.addWidget(QLabel("Enter download folder path:"))
         layout.addWidget(self.download_path_input)
 
@@ -74,7 +82,7 @@ class ChopChopMFalignment(ToolInstance):
         button2 = QPushButton("Download")
         layout.addWidget(button2)
 
-        button1.clicked.connect(self.align)
+        self.align_button.clicked.connect(self.align)
         button2.clicked.connect(self.save)
 
         layout.addWidget(QLabel("Scoring Scheme:"))
@@ -119,7 +127,11 @@ class ChopChopMFalignment(ToolInstance):
 
         container = QWidget()
         container.setLayout(layout)
-        self.tool_window.ui_area.setLayout(layout)
+
+        outer_layout = QVBoxLayout()
+        outer_layout.setContentsMargins(0, 0, 0, 0)
+        outer_layout.addWidget(make_scrollable(container))
+        self.tool_window.ui_area.setLayout(outer_layout)
         self.tool_window.manage('side')
 
     def apply_custom_colors(self):
@@ -138,6 +150,7 @@ class ChopChopMFalignment(ToolInstance):
         folder_path = QFileDialog.getExistingDirectory(self.tool_window.ui_area, "Select Download Folder")
         if folder_path:
             self.download_path_input.setText(folder_path)
+            get_settings(self.session).download_dir = folder_path
 
     def _refresh_model_list(self):
         print("Refreshing model list...")
@@ -145,24 +158,11 @@ class ChopChopMFalignment(ToolInstance):
         print("Model list refreshed.")
 
     def populate_combobox(self):
-        all_models, all_chains = self.get_models_and_chains(self.session)
+        all_models, all_chains, all_modl_index, all_chains_with_index = self.select_models_and_chains(self.session)
         self.combobox.clear()
-        for chain in all_chains:
-            self.combobox.addItem(chain)
-
-    def get_models_and_chains(self, session):
-        all_models, all_chains = [], []
-        for model in session.models.list():
-            if hasattr(model, "residues"):
-                all_models.append(model.id_string)
-                for chain_id in set(res.chain_id for res in model.residues):
-                    all_chains.append(f"Model {model.id_string}, Chain {chain_id}")
-        return all_models, all_chains
-
-    def fill_context_menu(self, menu, x, y):
-        action = QAction("Sample Action", menu)
-        action.triggered.connect(lambda: print("Sample Action triggered"))
-        menu.addAction(action)
+        for x in all_chains:
+            model_id, chain_id = x.split(":")
+            self.combobox.addItem(f"Model {model_id}, Chain {chain_id}", (model_id, chain_id))
 
     def is_semi_conserved(self, residue1, residue2):
         # Define the criteria for semi-conserved residues based on similarity of amino acid properties
@@ -217,228 +217,241 @@ class ChopChopMFalignment(ToolInstance):
     
     
     def align(self):
-	    # --- Create output directory ---
-	    mypath = Path().home()
-	    output_dir = f"{mypath}/ChopChop_output"
-	    if not os.path.exists(output_dir):
-	        os.mkdir(output_dir)
+        with busy_cursor(self.align_button):
+            self._do_align()
 
-	    # --- Get input model and chain IDs from combobox ---
-	    model_chain = str(self.combobox.currentText())
-	    if len(model_chain) == 16:
-	        model = model_chain[6]
-	        chain = model_chain[15]
-	    elif len(model_chain) == 17:
-	        model = model_chain[6] + model_chain[7]
-	        chain = model_chain[16]
-	    elif len(model_chain) == 18:
-	        model = model_chain[6] + model_chain[7] + model_chain[8]
-	        chain = model_chain[17]
-	    else:
-	        print(" Could not parse model/chain from combobox selection.")
-	        return
+    def _do_align(self):
+        # --- Create output directory ---
+        mypath = Path().home()
+        output_dir = f"{mypath}/ChopChop_output"
+        if not os.path.exists(output_dir):
+            os.mkdir(output_dir)
 
-	    # --- NEW: Detect actual starting residue number ---
-	    start_resnum = 1
-	    model_obj = None
-	    for m in self.session.models:
-	        if hasattr(m, "chains") and m.id_string == model:
-	            model_obj = m
-	            break
-	    if model_obj:
-	        for ch in model_obj.chains:
-	            if ch.chain_id == chain:
-	                start_resnum = ch.residues[0].number
-	                break
-	    print(f"Detected chain {chain} in model #{model} starting at residue {start_resnum}")
+        # --- Get input model and chain IDs from combobox ---
+        selection = self.combobox.currentData()
+        if not selection:
+            print("Could not determine model/chain from combobox selection.")
+            show_error(self.tool_window.ui_area, "ChopChopMF",
+                       "Could not determine model/chain from the combobox selection.")
+            return
+        model, chain = selection
 
-	    # --- Get FASTA sequence of chosen chain ---
-	    run(self.session, f"sequence chain #{model}/{chain}")
-	    run(self.session, f"save {output_dir}/chopchop_sequence1.fasta format fasta alignment {model}/{chain}")
+        # --- NEW: Detect actual starting residue number ---
+        start_resnum = 1
+        model_obj = None
+        for m in self.session.models:
+            if hasattr(m, "chains") and m.id_string == model:
+                model_obj = m
+                break
+        if model_obj:
+            for ch in model_obj.chains:
+                if ch.chain_id == chain:
+                    start_resnum = ch.residues[0].number
+                    break
+        print(f"Detected chain {chain} in model #{model} starting at residue {start_resnum}")
 
-	    with open(f"{output_dir}/chopchop_sequence1.fasta", "r", encoding="utf-8-sig") as file:
-	        lines = file.readlines()
+        # --- Get FASTA sequence of chosen chain ---
+        run(self.session, f"sequence chain #{model}/{chain}")
+        run(self.session, f'save "{output_dir}/chopchop_sequence1.fasta" format fasta alignment {model}/{chain}')
 
-	    header = True
-	    sequence1 = ""
-	    for line in lines:
-	        if header:
-	            header = False
-	            continue
-	        sequence1 += line.strip()
-	    sequence1 = sequence1.replace(" ", "").replace("\n", "")
+        with open(f"{output_dir}/chopchop_sequence1.fasta", "r", encoding="utf-8-sig") as file:
+            lines = file.readlines()
 
-	    # --- Format FASTA sequence from input text box ---
-	    sequence2 = str(self.text1.text()).strip().replace(" ", "").replace("\n", "")
+        header = True
+        sequence1 = ""
+        for line in lines:
+            if header:
+                header = False
+                continue
+            sequence1 += line.strip()
+        sequence1 = sequence1.replace(" ", "").replace("\n", "")
 
-	    # --- Get FASTA from UniProt ID if input contains digits ---
-	    if any(char.isdigit() for char in sequence2):
-	        url = f"https://www.uniprot.org/uniprot/{sequence2}.fasta"
-	        response = requests.get(url)
-	        if response.status_code == 200:
-	            fasta_file_path = os.path.join(output_dir, f"{sequence2}.fasta")
-	            with open(fasta_file_path, "w") as fasta_file:
-	                fasta_file.write(response.text)
-	            print(f"FASTA file for {sequence2} downloaded successfully.")
-	        else:
-	            raise ValueError(f"Failed to download FASTA file for UniProt ID: {sequence2}")
+        # --- Format FASTA sequence from input text box ---
+        sequence2 = str(self.text1.text()).strip().replace(" ", "").replace("\n", "")
 
-	        with open(fasta_file_path, "r", encoding="utf-8-sig") as file:
-	            lines = file.readlines()
-	        header = True
-	        sequence2 = ""
-	        for line in lines:
-	            if header:
-	                header = False
-	                continue
-	            sequence2 += line.strip()
-	        sequence2 = sequence2.replace(" ", "").replace("\n", "")
+        if not ALLOWED_SEQUENCE_CHARS.match(sequence2):
+            message = "The sequence/UniProt ID field may only contain letters and digits."
+            self.session.logger.warning(message)
+            show_error(self.tool_window.ui_area, "ChopChopMF", message)
+            return
 
-	    # --- Perform sequence alignment ---
-	    protein_name1 = "proteinA"
-	    protein_name2 = "proteinB"
-	    run(self.session, f"sequence align {sequence1},{sequence2} program muscle")
+        # --- Get FASTA from UniProt ID if input contains digits ---
+        if any(char.isdigit() for char in sequence2):
+            url = f"https://www.uniprot.org/uniprot/{sequence2}.fasta"
+            try:
+                response = requests.get(url, timeout=REQUEST_TIMEOUT)
+            except requests.exceptions.RequestException as e:
+                message = f"Failed to reach UniProt: {e}"
+                self.session.logger.warning(message)
+                show_error(self.tool_window.ui_area, "ChopChopMF", message)
+                return
+            if response.status_code == 200:
+                fasta_file_path = os.path.join(output_dir, f"{sequence2}.fasta")
+                with open(fasta_file_path, "w") as fasta_file:
+                    fasta_file.write(response.text)
+                print(f"FASTA file for {sequence2} downloaded successfully.")
+            else:
+                message = f"Failed to download FASTA file for UniProt ID: {sequence2}"
+                self.session.logger.warning(message)
+                show_error(self.tool_window.ui_area, "ChopChopMF", message)
+                return
 
-	    # --- Save last alignment in FASTA format ---
-	    alignment_Id = 1
-	    while True:
-	        try:
-	            run(self.session, f"save {output_dir}/chopchop_alignment.fasta format fasta alignment {alignment_Id}")
-	            alignment_Id += 1
-	        except Exception:
-	            break
+            with open(fasta_file_path, "r", encoding="utf-8-sig") as file:
+                lines = file.readlines()
+            header = True
+            sequence2 = ""
+            for line in lines:
+                if header:
+                    header = False
+                    continue
+                sequence2 += line.strip()
+            sequence2 = sequence2.replace(" ", "").replace("\n", "")
 
-	    # --- Parse alignment results ---
-	    alignment = []
-	    with open(f"{output_dir}/chopchop_alignment.fasta") as alignment_file:
-	        lines = alignment_file.readlines()
+        # --- Perform sequence alignment ---
+        protein_name1 = "proteinA"
+        protein_name2 = "proteinB"
+        run(self.session, f"sequence align {sequence1},{sequence2} program muscle")
 
-	        start_index = 1
-	        end_index = lines.index("\n")
-	        sequence1_alignment = "".join(lines[start_index:end_index]).strip().replace("\n", "")
+        # --- Save last alignment in FASTA format ---
+        alignment_Id = 1
+        while True:
+            try:
+                run(self.session, f'save "{output_dir}/chopchop_alignment.fasta" format fasta alignment {alignment_Id}')
+                alignment_Id += 1
+            except Exception:
+                break
 
-	        start_index = lines.index("\n") + 2
-	        sequence2_alignment = "".join(lines[start_index:]).strip().replace("\n", "")
+        # --- Parse alignment results ---
+        alignment = []
+        with open(f"{output_dir}/chopchop_alignment.fasta") as alignment_file:
+            lines = alignment_file.readlines()
 
-	        print("Sequence 1 Alignment:", sequence1_alignment)
-	        print("Sequence 2 Alignment:", sequence2_alignment)
+            start_index = 1
+            end_index = lines.index("\n")
+            sequence1_alignment = "".join(lines[start_index:end_index]).strip().replace("\n", "")
 
-	        for residue1, residue2 in zip(sequence1_alignment, sequence2_alignment):
-	            alignment.append([residue1, residue2])
+            start_index = lines.index("\n") + 2
+            sequence2_alignment = "".join(lines[start_index:]).strip().replace("\n", "")
 
-	    # --- Define scoring ---
-	    conserved_score = 1
-	    semi_conserved_score = 2
-	    non_conserved_score = 3
-	    gap_score = 4
+            print("Sequence 1 Alignment:", sequence1_alignment)
+            print("Sequence 2 Alignment:", sequence2_alignment)
 
-	    # --- Calculate alignment scores ---
-	    scores = []
-	    for residue1, residue2 in alignment:
-	        if residue1 == residue2:
-	            score = conserved_score
-	        elif residue1 != '-' and residue2 != '-':
-	            if self.is_semi_conserved(residue1, residue2):
-	                score = semi_conserved_score
-	            else:
-	                score = non_conserved_score
-	        elif residue1 == '-' or residue2 == '-':
-	            score = gap_score
-	        else:
-	            score = non_conserved_score
-	        scores.append(score)
+            for residue1, residue2 in zip(sequence1_alignment, sequence2_alignment):
+                alignment.append([residue1, residue2])
 
-	    # --- Write alignment results to TSV ---
-	    output_file = f"{output_dir}/{protein_name1}_{protein_name2}_alignment.csv"
-	    with open(output_file, "w", newline="") as file:
-	        writer = csv.writer(file, delimiter="\t")
-	        writer.writerow([protein_name1, protein_name2, "Alignment Score"])
-	        writer.writerow(["", "", "1: Conserved, 2: Semi-Conserved, 3: Not Conserved, 4: Gap"])
-	        for (residue1, residue2), score in zip(alignment, scores):
-	            writer.writerow([residue1, residue2, score])
+        # --- Define scoring ---
+        conserved_score = 1
+        semi_conserved_score = 2
+        non_conserved_score = 3
+        gap_score = 4
 
-	    print("Alignment results saved to:", output_file)
+        # --- Calculate alignment scores ---
+        scores = []
+        for residue1, residue2 in alignment:
+            if residue1 == residue2:
+                score = conserved_score
+            elif residue1 != '-' and residue2 != '-':
+                if self.is_semi_conserved(residue1, residue2):
+                    score = semi_conserved_score
+                else:
+                    score = non_conserved_score
+            elif residue1 == '-' or residue2 == '-':
+                score = gap_score
+            else:
+                score = non_conserved_score
+            scores.append(score)
 
-	    # --- Remove double quotes and save final CSV ---
-	    with open(output_file, "r") as inp:
-	        lines = inp.readlines()
-	    output_file_final = f"{output_dir}/{protein_name1}_{protein_name2}_alignment_final.csv"
-	    with open(output_file_final, "w") as out:
-	        for line in lines:
-	            if '"' not in line:
-	                out.write(line)
+        # --- Write alignment results to TSV ---
+        output_file = f"{output_dir}/{protein_name1}_{protein_name2}_alignment.csv"
+        with open(output_file, "w", newline="") as file:
+            writer = csv.writer(file, delimiter="\t")
+            writer.writerow([protein_name1, protein_name2, "Alignment Score"])
+            writer.writerow(["", "", "1: Conserved, 2: Semi-Conserved, 3: Not Conserved, 4: Gap"])
+            for (residue1, residue2), score in zip(alignment, scores):
+                writer.writerow([residue1, residue2, score])
 
-	    # --- Parse alignment into column CSV ---
-	    input_file_path = output_file_final
-	    with open(input_file_path, "r") as tsv_file:
-	        tsv_reader = csv.reader(tsv_file, delimiter="\t")
-	        next(tsv_reader)  # header
-	        next(tsv_reader)  # scoring row
+        print("Alignment results saved to:", output_file)
 
-	        protein_names_column1 = []
-	        protein_names_column2 = []
-	        alignment_scores_column3 = []
-	        for row in tsv_reader:
-	            protein_names_column1.append(row[0])
-	            protein_names_column2.append(row[1])
-	            alignment_scores_column3.append(row[2])
+        # --- Remove double quotes and save final CSV ---
+        with open(output_file, "r") as inp:
+            lines = inp.readlines()
+        output_file_final = f"{output_dir}/{protein_name1}_{protein_name2}_alignment_final.csv"
+        with open(output_file_final, "w") as out:
+            for line in lines:
+                if '"' not in line:
+                    out.write(line)
 
-	    output_file_path_column1 = f"{output_dir}/column1_proteins.csv"
-	    with open(output_file_path_column1, "w", newline="") as output_file_column1:
-	        csv_writer = csv.writer(output_file_column1, delimiter="\t")
-	        csv_writer.writerow(["Residue", "Alignment Score"])
-	        for i in range(len(protein_names_column1)):
-	            csv_writer.writerow([protein_names_column1[i], alignment_scores_column3[i]])
-	        output_file_column1.write("# Scoring: 1 = Conserved, 2 = Semi-Conserved, 3 = Not Conserved, 4 = Gap\n")
+        # --- Parse alignment into column CSV ---
+        input_file_path = output_file_final
+        with open(input_file_path, "r") as tsv_file:
+            tsv_reader = csv.reader(tsv_file, delimiter="\t")
+            next(tsv_reader)  # header
+            next(tsv_reader)  # scoring row
 
-	    # --- Load the CSV and clean it ---
-	    data = []
-	    with open(output_file_path_column1, "r") as file:
-	        reader = csv.reader(file, delimiter="\t")
-	        for row in reader:
-	            if not row[0].startswith('-'):
-	                data.append(row)
+            protein_names_column1 = []
+            protein_names_column2 = []
+            alignment_scores_column3 = []
+            for row in tsv_reader:
+                protein_names_column1.append(row[0])
+                protein_names_column2.append(row[1])
+                alignment_scores_column3.append(row[2])
 
-	    # --- Build defattr header ---
-	    header = (
-	        "#  \n"
-	        "#  Use this file to assign the attribute in Chimera with the Define Attribute tool.\n"
-	        "#  open .defattr then use the command:\n"
-	        "#  color byattribute MUSCLEalignment palette 1,teal:2,palegoldenrod:3,lightsalmon:4,dimgrey\n"
-	        "#  \n"
-	        "#  Scoring: 1 = Conserved, 2 = Semi-Conserved, 3 = Not Conserved, 4 = Gap\n"
-	        "#  \n"
-	        "attribute: MUSCLEalignment\n"
-	        "match mode: 1-to-1\n"
-	        "recipient: residues\n"
-	    )
+        output_file_path_column1 = f"{output_dir}/column1_proteins.csv"
+        with open(output_file_path_column1, "w", newline="") as output_file_column1:
+            csv_writer = csv.writer(output_file_column1, delimiter="\t")
+            csv_writer.writerow(["Residue", "Alignment Score"])
+            for i in range(len(protein_names_column1)):
+                csv_writer.writerow([protein_names_column1[i], alignment_scores_column3[i]])
+            output_file_column1.write("# Scoring: 1 = Conserved, 2 = Semi-Conserved, 3 = Not Conserved, 4 = Gap\n")
 
-	    # --- Number residues correctly using detected start_resnum ---
-	    for i in range(1, len(data) - 1):
-	        residue = data[i][0]
-	        residue_parts = residue.split(":")
-	        residue_parts[0] = residue_parts[0].lstrip("ARNDCEQGHILKMFPSTWYV")
-	        residue_number = start_resnum + (i - 1)
-	        data[i][0] = f"\t{residue_parts[0]}:{residue_number}"
+        # --- Load the CSV and clean it ---
+        data = []
+        with open(output_file_path_column1, "r") as file:
+            reader = csv.reader(file, delimiter="\t")
+            for row in reader:
+                if not row[0].startswith('-'):
+                    data.append(row)
 
-	    output_filename = f"{os.path.splitext('/column1_proteins.csv')[0]}_MUSCLEalignment4ChimeraX.defattr"
-	    output_filepath = f"{output_dir}{output_filename}"
+        # --- Build defattr header ---
+        header = (
+            "#  \n"
+            "#  Use this file to assign the attribute in Chimera with the Define Attribute tool.\n"
+            "#  open .defattr then use the command:\n"
+            "#  color byattribute MUSCLEalignment palette 1,teal:2,palegoldenrod:3,lightsalmon:4,dimgrey\n"
+            "#  \n"
+            "#  Scoring: 1 = Conserved, 2 = Semi-Conserved, 3 = Not Conserved, 4 = Gap\n"
+            "#  \n"
+            "attribute: MUSCLEalignment\n"
+            "match mode: 1-to-1\n"
+            "recipient: residues\n"
+        )
 
-	    with open(output_filepath, "w", newline="") as file:
-	        file.write(header)
-	        for row in data[1:-1]:
-	            file.write("\t".join(row).strip('"') + "\n")
+        # --- Number residues correctly using detected start_resnum ---
+        for i in range(1, len(data) - 1):
+            residue = data[i][0]
+            residue_parts = residue.split(":")
+            residue_parts[0] = residue_parts[0].lstrip("ARNDCEQGHILKMFPSTWYV")
+            residue_number = start_resnum + (i - 1)
+            data[i][0] = f"\t{residue_parts[0]}:{residue_number}"
 
-	    print("The updated data has been saved as", output_filename)
+        output_filename = f"{os.path.splitext('/column1_proteins.csv')[0]}_MUSCLEalignment4ChimeraX.defattr"
+        output_filepath = f"{output_dir}{output_filename}"
 
-	    # --- Color the model in ChimeraX ---
-	    self.add_chain_id(output_dir, output_filename, chain, model)
-	    run(self.session, f"open {output_dir}/Chain{chain}_{output_filename[1:]}")
-	    run(self.session, "color byattribute MUSCLEalignment palette 1,teal:2,palegoldenrod:3,lightsalmon:4,dimgrey")
+        with open(output_filepath, "w", newline="") as file:
+            file.write(header)
+            for row in data[1:-1]:
+                file.write("\t".join(row).strip('"') + "\n")
 
-	    # --- Apply lighting ---
-	    run(self.session, "lighting flat")
-	    run(self.session, "lighting soft")
+        print("The updated data has been saved as", output_filename)
+
+        # --- Color the model in ChimeraX ---
+        self.add_chain_id(output_dir, output_filename, chain, model)
+        run(self.session, f'open "{output_dir}/Chain{chain}_{output_filename[1:]}"')
+        run(self.session, "color byattribute MUSCLEalignment palette 1,teal:2,palegoldenrod:3,lightsalmon:4,dimgrey")
+
+        # --- Apply lighting ---
+        run(self.session, "lighting flat")
+        run(self.session, "lighting soft")
     
         
 
@@ -454,7 +467,7 @@ class ChopChopMFalignment(ToolInstance):
                 self.session.logger.warning(f"Failed to create directory {download_dir}: {e}")
                 return
         output_dir = "{}/ChopChop_output".format(mypath)
-        distutils.dir_util.copy_tree(output_dir, str(download_dir))
+        shutil.copytree(output_dir, str(download_dir), dirs_exist_ok=True)
         #delete original output folder
         shutil.rmtree(output_dir)
         print("Alignment downloaded in {}".format(download_dir))
@@ -490,15 +503,11 @@ class ChopChopMFalignment(ToolInstance):
       
     def fill_context_menu(self, menu, x, y):
         # Add any tool-specific items to the given context menu (a QMenu instance).
-        # The menu will then be automatically fijlled out with generic tool-related actions
-        # (e.g. Hide Tool, Help, Dockable Tool, etc.) 
-        #
         # The x,y args are the x() and y() values of QContextMenuEvent, in the rare case
         # where the items put in the menu depends on where in the tool interface the menu
         # was raised.
-        #from Qt.QtGui import QAction
         clear_action = QAction("Clear", menu)
-        clear_action.triggered.connect(lambda *args: self.line_edit.clear())
+        clear_action.triggered.connect(lambda *args: self.text1.clear())
         menu.addAction(clear_action)
 
 

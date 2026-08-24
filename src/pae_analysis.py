@@ -27,6 +27,8 @@ from chimerax.core.commands import run
 from chimerax.ui import MainToolWindow
 from Qt.QtWidgets import (QVBoxLayout, QLabel, QPushButton, QWidget, QComboBox, QTabWidget)
 from Qt.QtGui import QFont
+from Qt.QtCore import Qt
+from .utils import make_scrollable, make_guide_button
 
 class PAEAnalysis(ToolInstance):
 
@@ -52,8 +54,8 @@ class PAEAnalysis(ToolInstance):
         layout.addWidget(title_label)
 
         tabs = QTabWidget()
-        tabs.addTab(self._create_contacts_tab(), "1. PAE Contacts")
-        tabs.addTab(self._create_residue_tab(), "2. PAE Contact Residues")
+        tabs.addTab(make_scrollable(self._create_contacts_tab()), "1. PAE Contacts")
+        tabs.addTab(make_scrollable(self._create_residue_tab()), "2. PAE Contact Residues")
         layout.addWidget(tabs)
 
         container = QWidget()
@@ -65,6 +67,8 @@ class PAEAnalysis(ToolInstance):
     def _create_contacts_tab(self):
         widget = QWidget()
         layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignTop)
+        layout.addWidget(make_guide_button("4-analyze-structure"))
 
         layout.addWidget(QLabel("PAE (Predicted Aligned Error):"))
 
@@ -107,6 +111,8 @@ class PAEAnalysis(ToolInstance):
     def _create_residue_tab(self):
         widget = QWidget()
         layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignTop)
+        layout.addWidget(make_guide_button("4-analyze-structure"))
 
         instructions = QLabel(
             "This tab selects residues that are connected by pseudobonds in the PAE Contacts model.\n"
@@ -195,13 +201,4 @@ class PAEAnalysis(ToolInstance):
         run(self.session, "color sel byhetero")
         pb_model.delete()
         self.session.logger.info("Pseudobond model deleted. Residues remain selected and styled by heteroatom.")
-
-from chimerax.core.toolshed import BundleAPI
-
-class _PAEAnalysisBundleAPI(BundleAPI):
-    @staticmethod
-    def start_tool(session, tool_name):
-        return PAEAnalysis(session, tool_name)
-
-bundle_api = _PAEAnalysisBundleAPI()
 

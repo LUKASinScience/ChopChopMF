@@ -11,9 +11,9 @@ You can install **ChopChopMF** by toolshed through the **GUI** within ChimeraX o
 
 **GUI**
 
-2. Under `Tools` select `More Tools` a new window qwith the toolshed will open. Search for **ChopChopMF** and install the lates version.
+2. Under `Tools` select `More Tools` a new window with the toolshed will open. Search for **ChopChopMF** and install the latest version.
 
-!!! tip "Recomended Installation via Toolshed through CHimeraX"
+!!! tip "Recommended Installation via Toolshed through ChimeraX"
     We recommend Installation through ChimeraX, you do not need any command, If ChopChopMF is not directly listed on the Toolshed start page, just search for ChopChopMF
     
 
@@ -40,7 +40,7 @@ toolshed install ChopChopMF
 
 3. Open ChimeraX and install the package using the command:
 ```py
-toolshed install chimerax_chopchopmf-1.1-py3-none-any.whl
+toolshed install chimerax_chopchopmf-1.3-py3-none-any.whl
 ```
 
 4. Relaunch ChimeraX

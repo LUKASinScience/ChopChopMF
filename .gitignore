@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# ChimeraX bundle build artifacts
+*.whl
+
+# MkDocs
+site/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+
+# Local staging file for ChimeraX Toolshed submissions (not part of the repo history)
+TOOLSHED_RELEASE_NOTES.md

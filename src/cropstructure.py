@@ -25,6 +25,8 @@ from chimerax.core.commands import run
 from Qt.QtWidgets import (QVBoxLayout, QLineEdit, QLabel, QPushButton, QComboBox,
                            QWidget, QTabWidget, QHBoxLayout)
 from Qt.QtGui import QFont
+from Qt.QtCore import Qt
+from .utils import make_scrollable, make_guide_button
 
 
 class CropStructureTool(ToolInstance):
@@ -53,8 +55,8 @@ class CropStructureTool(ToolInstance):
         layout.addWidget(title_label)
 
         tabs = QTabWidget()
-        tabs.addTab(self._create_crop_tab(), "Crop Residues")
-        tabs.addTab(self._create_delete_tab(), "Delete Chain")
+        tabs.addTab(make_scrollable(self._create_crop_tab()), "Crop Residues")
+        tabs.addTab(make_scrollable(self._create_delete_tab()), "Delete Chain")
         layout.addWidget(tabs)
 
         self.tool_window.ui_area.setLayout(layout)
@@ -63,6 +65,8 @@ class CropStructureTool(ToolInstance):
     def _create_crop_tab(self):
         widget = QWidget()
         layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignTop)
+        layout.addWidget(make_guide_button("3-modify-structure"))
 
         layout.addWidget(QLabel("Select model:"))
         self.crop_model_selector = QComboBox()
@@ -199,6 +203,8 @@ class CropStructureTool(ToolInstance):
     def _create_delete_tab(self):
         widget = QWidget()
         layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignTop)
+        layout.addWidget(make_guide_button("3-modify-structure"))
         layout.addWidget(QLabel("Select model:"))
         self.delete_model_selector = QComboBox()
         layout.addWidget(self.delete_model_selector)
