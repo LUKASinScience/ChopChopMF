@@ -20,12 +20,10 @@ jobs:
           python-version: 3.x
 
       - name: Install dependencies
-        run: |
-          pip install mkdocs-material
-          pip install pymdown-extensions
+        run: pip install zensical
 
       - name: Build the docs
-        run: mkdocs build
+        run: zensical build --strict
 
       - name: Deploy site
         uses: peaceiris/actions-gh-pages@v4
