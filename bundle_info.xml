@@ -5,7 +5,7 @@ When uploaded to the ChimeraX toolshed, the bundle
 will be displayed without the ChimeraX- prefix.
 -->
 
-<BundleInfo name="ChimeraX-ChopChopMF" version="1.3" package="chimerax.chopchop_mf" minSessionVersion="1" maxSessionVersion="1">
+<BundleInfo name="ChimeraX-ChopChopMF" version="1.4" package="chimerax.chopchop_mf" minSessionVersion="1" maxSessionVersion="1">
   
   <!-- Author and Contact Information -->
   <Author>Lukas W. Bauer, Ricarda Erhart ISTA Bioinformatics, Florian K. M. Schur</Author>
@@ -72,10 +72,34 @@ will be displayed without the ChimeraX- prefix.
                 name="Foldseek Analysis"
                 icon="foldseeklogo.png"
                 description="Launch the FoldseekAnalysis tool."/>
+      <Provider tab="ChopChopMF" section="Analyze Structure"
+                name="Investigate"
+                icon="investigate.png"
+                description="Launch the Investigate tool (cross-tool residue annotations)."/>
+      <Provider tab="ChopChopMF" section="Analyze Structure"
+                name="Batch Analysis"
+                icon="batch_analysis.png"
+                description="Launch the Batch Analysis tool (interface scores across every open model)."/>
+      <Provider tab="ChopChopMF" section="Cell Biology"
+                name="Phospho Sites"
+                icon="phospho_icon.png"
+                description="Launch the Phospho Sites tool (kinase phosphorylation-site motif finder)."/>
+      <Provider tab="ChopChopMF" section="Cell Biology"
+                name="Signal Peptide"
+                icon="signal_icon.png"
+                description="Launch the Signal Peptide tool (subcellular targeting-signal motif finder)."/>
+      <Provider tab="ChopChopMF" section="Cell Biology"
+                name="TM Helix"
+                icon="tm_helix_icon.png"
+                description="Launch the TM Helix tool (transmembrane helix finder)."/>
       <Provider tab="ChopChopMF" section="Undo"
                 name="Undo"
                 icon="ChopUndo.png"
                 description="Undo the last action performed in the ChopChopMFalignment tool."/>
+      <Provider tab="ChopChopMF" section="Setup"
+                name="Setup"
+                icon="setup_icon.png"
+                description="Launch the ChopChopMF Setup tool (shared save/output locations, Investigate session save/load)."/>
       <Provider tab="ChopChopMF" section="Fetch PDB"
                 name="AlphaFold2"
                 icon="AlphaFoldIconChop.png"
@@ -93,19 +117,25 @@ will be displayed without the ChimeraX- prefix.
       <Tool name="PAE Analysis" category="ChopChopMF/Analyze Structure"/>
       <Tool name="PDBePISA" category="ChopChopMF/Analyze Structure"/>
       <Tool name="Foldseek Analysis" category="ChopChopMF/Analyze Structure"/>
+      <Tool name="Investigate" category="ChopChopMF/Analyze Structure"/>
+      <Tool name="Batch Analysis" category="ChopChopMF/Analyze Structure"/>
       <Tool name="AlphaFold2" category="ChopChopMF/Fetch PDB"/>
+      <Tool name="Setup" category="ChopChopMF/Setup"/>
+      <Tool name="Phospho Sites" category="ChopChopMF/Cell Biology"/>
+      <Tool name="Signal Peptide" category="ChopChopMF/Cell Biology"/>
+      <Tool name="TM Helix" category="ChopChopMF/Cell Biology"/>
   </Tools>
 
   <!-- Installation Logging -->
   <Install>
-    <Command>logger info "ChopChopMF-1.3"</Command>
+    <Command>logger info "ChopChopMF-1.4"</Command>
   </Install>
 
   <!-- ChimeraX-specific classifiers -->
   <Classifiers>
     <PythonClassifier>Development Status :: 3 - Alpha</PythonClassifier>
     <PythonClassifier>License :: Freeware</PythonClassifier>
-    <ChimeraXClassifier>ChimeraX :: Tool :: ChopChopMF :: Provides sequence alignment visualization tools</ChimeraXClassifier>
+    <ChimeraXClassifier>ChimeraX :: Tool :: ChopChopMF :: General :: Multi-functional protein structure analysis toolbar</ChimeraXClassifier>
   </Classifiers>
 </BundleInfo>
 

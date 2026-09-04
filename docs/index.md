@@ -7,7 +7,7 @@ Welcome to the official guide for [**ChopChopMF**](https://cxtoolshed.rbvi.ucsf.
 
 
 
-## Overview
+## :material-information-outline: Overview
 ChopChopMF streamlines the process of analyzing protein structures by providing an intuitive toolkit for researchers. Whether you are working with AlphaFold predictions, cryo-EM models, or experimental PDB structures, ChopChopMF helps you **chopchop** through the complexity of molecular data.
 
 !!! question "Why did we develop ChopChopMF?"
@@ -16,14 +16,37 @@ ChopChopMF streamlines the process of analyzing protein structures by providing 
 
     Ultimately, **ChopChopMF** acts as a **bridge between disciplines**. It enables researchers from outside the structural biology field to better access, interpret, and share the structural protein data that structural biologists work so hard on to produce. Our goal is to create a more integrated research environment where structural insights are seamlessly shared and understood across all biological sciences.
 
-### Key Features
+### :material-star-outline: Key Features
 
-* **Fast Analysis**: Optimized workflows to reduce the time looking up commands, all GUI based for easier and faster Workflows.
-* **ChimeraX Native**: Fully integrated into the ChimeraX environment via the [Toolshed](https://cxtoolshed.rbvi.ucsf.edu/apps/chimeraxchopchopmf){ target="_blank" }.
-* **Accessibility**: A simplified interface that makes advanced structural analysis tools available to a broader range of users.
+<div class="grid cards" markdown>
 
+-   :material-flash-outline: **Fast Analysis**
 
-## Getting Started
+    ---
+
+    Optimized workflows to reduce the time looking up commands - all GUI based for easier and faster workflows.
+
+-   :material-puzzle-outline: **ChimeraX Native**
+
+    ---
+
+    Fully integrated into the ChimeraX environment via the [Toolshed](https://cxtoolshed.rbvi.ucsf.edu/apps/chimeraxchopchopmf){ target="_blank" }.
+
+-   :material-account-heart-outline: **Accessibility**
+
+    ---
+
+    A simplified interface that makes advanced structural analysis tools available to a broader range of users.
+
+-   :material-magnify-scan: **Investigate: see it all at once**
+
+    ---
+
+    Every other tool answers one question. **Investigate** pulls every value any ChopChopMF tool has computed for a structure - interface scores, pathogenicity, solvent accessibility, motif hits, and more - into one residue-by-residue Chart, so you can spot the connections a single tool never would. See it in action in the [Usage Guide](usage.md#chopchopmf-tools).
+
+</div>
+
+## :material-rocket-launch-outline: Getting Started
 
 To get started with ChopChopMF, please follow these steps:
 
@@ -31,7 +54,7 @@ To get started with ChopChopMF, please follow these steps:
 2.  **Basic Usage**: Visit the [Usage Page](usage.md) to see what Tools ChopChopMF offers you.
 3.  **User-cases**: Here we need you! You found ChopChopMF usefull and you want to share for what and how it was useful? Or what we could improve? Please contact us via [E-mail](mailto:lukasinscience@gmail.com)
 
-## Quick Links
+## :material-link-variant: Quick Links
 
 * **Toolshed Page**: [ChopChopMF on UCSF Toolshed](https://cxtoolshed.rbvi.ucsf.edu/apps/chimeraxchopchopmf){ target="_blank" }
 

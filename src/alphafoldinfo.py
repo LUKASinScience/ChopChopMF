@@ -13,7 +13,7 @@
 
 """
 AlphaFoldInfoTool.py / Integrated Tool
-ChimeraX tool to display AlphaFold resources, color structure by pLDDT score, 
+ChimeraX tool to display AlphaFold resources, color structure by pLDDT,
 provide UniProt linking and annotation commands, and integrate AlphaSync data analysis.
 """
 
@@ -25,6 +25,7 @@ from chimerax.core.tools import ToolInstance
 from chimerax.core.commands import run
 from chimerax.ui import MainToolWindow
 from chimerax.core.models import Model
+from chimerax.atomic import Residue, Sequence
 from Qt.QtWidgets import (
     QVBoxLayout, QLabel, QPushButton, QWidget, QHBoxLayout, QFrame, QTabWidget, 
     QComboBox, QLineEdit, QListWidget, QListWidgetItem,
@@ -38,6 +39,24 @@ from .utils import make_scrollable, make_guide_button, busy_cursor, show_error
 # ---------- AlphaSync Constants ----------
 BASE_URL = "https://alphasync.stjude.org/api/v1/"
 HEADERS = {"Accept": "application/json"}
+
+# AlphaSync residue fields -> (ChimeraX attribute name, attr_type) for
+# "Attach values to structure". "site"/"aa" are used only to verify the
+# numbering matches (see _attach_alphasync_to_structure), and "plddt" is
+# deliberately excluded - it's the same AlphaFold pLDDT already shown from
+# the structure's own B-factor column whenever the mapping is actually
+# verified to line up, so attaching it too would just recreate the
+# "pLDDT_score" duplicate-column problem already fixed elsewhere this
+# session. "contacts" is also excluded - it's a list, not a single scalar
+# value, and doesn't fit a Chart column the way the others do; it stays
+# visible only in AlphaSync's own residue table.
+_ALPHASYNC_ATTRS = {
+    "asa": ("chopchop_alphasync_asa", float),
+    "relasa10": ("chopchop_alphasync_rsa", float),
+    "surf": ("chopchop_alphasync_surface", str),
+    "dis": ("chopchop_alphasync_disorder", str),
+    "sec": ("chopchop_alphasync_secstruct", str),
+}
 REQUEST_TIMEOUT = 20  # seconds
 # -----------------------------------------
 
@@ -83,6 +102,7 @@ class AlphaFold2(ToolInstance):
         self.alphasync_status_label = QLabel("") # Status for AlphaSync tab
         self.alphasync_structure_list = QListWidget() # Model list for AlphaSync
         self.tab_residue_table = QTableWidget()     # Table for AlphaSync data
+        self._alphasync_data = None         # last fetched AlphaSync residue data, for "Attach to structure"
 
 
         # Populate initial lists and guess UniProt ID
@@ -263,7 +283,102 @@ class AlphaFold2(ToolInstance):
         self.uniprot_input.setText(uniprot_upper) # Sync with UniProt tab
         self.alphasync_input_edit.setText(uniprot_upper)
         self._alphasync_log(f"UniProt ID set to {self.protein_acc}")
-        
+
+    def _alphasync_selected_model(self):
+        """The model currently selected in the AlphaSync 'Structure Selection' list,
+        resolved from its '#<id> <name>' label back to the live model object."""
+        item = self.alphasync_structure_list.currentItem()
+        if not item:
+            return None
+        id_string = item.text().split(" ", 1)[0].lstrip("#")
+        return next((m for m in self.session.models.list() if m.id_string == id_string), None)
+
+    def _attach_alphasync_to_structure(self):
+        """Write the last-fetched AlphaSync residue data onto the selected model's
+        residues as real ChimeraX attributes - but only after verifying that the
+        UniProt sequence position ('site') actually lines up with this structure's
+        own residue numbering (comparing AlphaSync's 'aa' field against the
+        structure's actual residue name at the same number). AlphaFold DB models are
+        numbered 1..N matching the full UniProt sequence with no gaps, so this holds
+        for a genuine, uncropped AlphaFold DB fetch - but not for a cropped structure,
+        an experimental PDB with author-numbering gaps, or the wrong UniProt ID, so it
+        must be checked per structure rather than assumed.
+
+        Checked per chain, not across the whole model at once: a multi-chain complex
+        (e.g. an AlphaFold-Multimer prediction) can have several chains sharing the
+        same residue-number range, and AlphaSync data describes exactly one UniProt
+        protein/chain - pooling all chains together would let one chain's numbers
+        collide with another's and could wrongly reject (or wrongly accept) the match.
+        Attaches to every chain that independently passes the threshold, so a
+        homodimer of the same UniProt protein correctly gets both chains annotated."""
+        if not self._alphasync_data:
+            show_error(self.tool_window.ui_area, "ChopChopMF", "Fetch AlphaSync residue data first.")
+            return
+        model = self._alphasync_selected_model()
+        if model is None:
+            show_error(self.tool_window.ui_area, "ChopChopMF", "Select a model in 'Structure Selection' first.")
+            return
+
+        by_site = {}
+        for res in self._alphasync_data:
+            site = res.get("site")
+            if site is not None:
+                by_site[int(site)] = res
+
+        to_set = []
+        per_chain_report = []
+        for chain_id in sorted({r.chain_id for r in model.residues}):
+            matches, mismatches, chain_to_set = 0, 0, []
+            for residue in model.residues:
+                if residue.chain_id != chain_id:
+                    continue
+                entry = by_site.get(residue.number)
+                if entry is None:
+                    continue
+                expected_aa = (entry.get("aa") or "").strip().upper()
+                actual_aa = Sequence.protein3to1(residue.name).upper()
+                if not expected_aa or actual_aa == "X":
+                    continue  # can't verify this residue (non-standard/unknown) - skip, don't count either way
+                if actual_aa == expected_aa:
+                    matches += 1
+                    chain_to_set.append((residue, entry))
+                else:
+                    mismatches += 1
+            total_checked = matches + mismatches
+            per_chain_report.append(f"chain {chain_id}: {matches}/{total_checked}")
+            if total_checked >= 10 and matches / total_checked >= 0.95:
+                to_set.extend(chain_to_set)
+
+        if not to_set:
+            message = (
+                f"Residue numbering didn't match this structure on any chain ({'; '.join(per_chain_report)}) "
+                "- AlphaSync values were NOT attached. This usually means the open structure isn't the "
+                "full-length AlphaFold model for this UniProt entry (e.g. a cropped or experimental "
+                "structure), or the wrong model/UniProt ID is selected."
+            )
+            self._alphasync_log(message)
+            show_error(self.tool_window.ui_area, "ChopChopMF", message)
+            return
+
+        for attr_name, attr_type in _ALPHASYNC_ATTRS.values():
+            Residue.register_attr(self.session, attr_name, "AlphaSync", attr_type=attr_type)
+        for residue, entry in to_set:
+            for field, (attr_name, attr_type) in _ALPHASYNC_ATTRS.items():
+                value = entry.get(field)
+                if value is None or value == "":
+                    continue
+                try:
+                    setattr(residue, attr_name, attr_type(value))
+                except (TypeError, ValueError):
+                    continue
+
+        message = (
+            f"AlphaSync data attached to {len(to_set)} residues on model #{model.id_string} "
+            f"({'; '.join(per_chain_report)})."
+        )
+        self._alphasync_log(message)
+        self.session.logger.info(message)
+
     def _build_ui(self):
         self.tabs = QTabWidget()
 
@@ -337,7 +452,7 @@ class AlphaFold2(ToolInstance):
         refresh_btn.clicked.connect(self._refresh_model_list)
         main_layout.addWidget(refresh_btn)
 
-        color_btn = QPushButton("Color selected model by AlphaFold2 pLDDT score")
+        color_btn = QPushButton("Color selected model by AlphaFold2 pLDDT")
         color_btn.clicked.connect(self._color_selected_model)
         main_layout.addWidget(color_btn)
         
@@ -495,6 +610,17 @@ class AlphaFold2(ToolInstance):
         btn_layout.addWidget(use_btn)
 
         tab_structure_layout.addLayout(btn_layout)
+
+        attach_btn = QPushButton("Attach fetched values to this structure")
+        attach_btn.setToolTip(
+            "Writes SASA/RSA/Surface/Disorder/Secondary-structure as real ChimeraX residue "
+            "attributes (so they show up in Investigate's Chart, and can be used with "
+            "'color byattribute'/'select'), after verifying the residue numbering actually "
+            "matches this structure's own sequence - never done blindly."
+        )
+        attach_btn.clicked.connect(self._attach_alphasync_to_structure)
+        tab_structure_layout.addWidget(attach_btn)
+
         alphasync_tool_tabs.addTab(make_scrollable(tab_structure_widget), "Structure Selection")
         
         self._refresh_alphasync_model_list()
@@ -610,6 +736,7 @@ class AlphaFold2(ToolInstance):
     #---------------------------TABLE POPULATION-----------------------
 
     def _populate_residue_table(self, data):
+        self._alphasync_data = data
         self.tab_residue_table.setRowCount(len(data))
 
         for i, res in enumerate(data):
@@ -642,7 +769,7 @@ class AlphaFold2(ToolInstance):
     #-------------------------Existing Tab Logic------------------------
 
     def _color_selected_model(self):
-        """Select the chosen model and color by AlphaFold pLDDT score."""
+        """Select the chosen model and color by AlphaFold pLDDT."""
         if self.model_combo.count() == 0:
             self.session.logger.info("No models available to color.")
             return
@@ -656,7 +783,7 @@ class AlphaFold2(ToolInstance):
 
         try:
             run(self.session, f"color byattribute bfactor {model_id} palette alphafold")
-            self.session.logger.info(f"Colored {model_id} by AlphaFold pLDDT score.")
+            self.session.logger.info(f"Colored {model_id} by AlphaFold pLDDT.")
         except Exception as e:
             self.session.logger.warning(f"Failed to color {model_id}: {e}")
             

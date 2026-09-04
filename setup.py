@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="ChimeraX-ChopChopMF",
-    version="1.3",
+    version="1.4",
     description="Visualization of a sequence alignment in 3D structure",
     long_description=(
         "This tool conducts an alignment of two amino acid sequences. "
@@ -30,6 +30,15 @@ setup(
             "src/foldseekanalysis.py",
             "src/pae_analysis.py",
             "src/utils.py",
+            "src/scoring.py",
+            "src/investigate.py",
+            "src/annotations.py",
+            "src/batch_analysis.py",
+            "src/chopchop_settings.py",
+            "src/cellbio.py",
+            "src/phospho_sites.py",
+            "src/signal_peptide.py",
+            "src/transmembrane_helix.py",
 
         ]),
         # Include icon files
@@ -44,7 +53,13 @@ setup(
             "src/icons/pisa.png",
             "src/icons/foldseeklogo.png",
             "src/icons/pae_icon.png",
-             
+            "src/icons/investigate.png",
+            "src/icons/batch_analysis.png",
+            "src/icons/setup_icon.png",
+            "src/icons/phospho_icon.png",
+            "src/icons/signal_icon.png",
+            "src/icons/tm_helix_icon.png",
+
         ]),
     ],
     classifiers=[

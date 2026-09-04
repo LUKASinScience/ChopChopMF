@@ -6,11 +6,14 @@ ChopChopMF is a user-friendly GUI plug-in for ChimeraX designed to make protein 
     Every action in ChopChopMF triggers the underlying ChimeraX engine automatically, removing the need for complicated command-line syntax.
 
 !!! tip "How to use this guide"
-    Every tool in ChopChopMF has a **📖 Open Guide / Tutorial** button at the top of its window. Clicking it opens this page in your browser, jumped to the right tool's category, so you can keep the step-by-step instructions open next to ChimeraX while you work.
+    Every tool in ChopChopMF has an **:material-book-open-page-variant: Open Guide / Tutorial** button at the top of its window. Clicking it opens this page in your browser, jumped to the right tool's category, so you can keep the step-by-step instructions open next to ChimeraX while you work.
 
-    Each tool below is explained the same way: a short **"What it does"**, then a **numbered walkthrough** with a concrete example, so you can follow along with your own structure. If you get stuck, look for the `???`/`!!!` boxes — they call out tips, warnings, and common pitfalls specific to that step.
+    Each tool below is explained the same way: a short **"What it does"**, then a **numbered walkthrough** with a concrete example, so you can follow along with your own structure. If you get stuck, look for :material-lightbulb-on-outline: tip and :material-alert-outline: warning boxes throughout — they call out common pitfalls specific to that step — and click any :material-chevron-down-box-outline: **Example** box to expand a worked-through scenario.
 
-## The Toolbar
+!!! abstract "Want the deeper background?"
+    This guide covers *how to use ChopChopMF*. For the underlying concepts - what PAE, pLDDT, and ipTM actually mean, how AlphaFold works, how to read AlphaMissense scores - see Lukas's companion [**AlphaFold Guide**](https://lukasinscience.github.io/AlphaFold-Guide/){:target="_blank"}, which also has its own [ChopChopMF workflows section](https://lukasinscience.github.io/AlphaFold-Guide/chopchopmf/workflows/){:target="_blank"} with more end-to-end recipes.
+
+## :material-view-grid-outline: The Toolbar
 
 After [Installation of ChopChopMF](installation.md) and Restarting ChimeraX, you will find ChopChopMF and all it's tools in the Toolbar:
 
@@ -24,9 +27,36 @@ After [Installation of ChopChopMF](installation.md) and Restarting ChimeraX, you
 
 ---
 
-## ChimeraX
+## :material-folder-outline: Input & Output Files
 
-### ChimeraX Guide
+Where things are read from and saved to, across every tool - handy to know once, rather than rediscovering it tool by tool.
+
+**Loading input:**
+
+- **Structures** (`.pdb`/`.cif`) - open from anywhere, ChimeraX/ChopChopMF doesn't care where.
+- **PAE `.json` files** - expected in the same folder as the structure they belong to (the normal convention for AlphaFold3-server, AlphaFold DB, and ColabFold output). PAE Analysis's **Load .json file** dialog opens directly in the structure's own folder by default. Batch Analysis's **Folder of files** mode goes a step further for AlphaFold3-server naming specifically (`..._model_N.cif` next to `..._full_data_N.json`) and loads the matching file automatically - see [4. Analyze Structure → Batch Analysis](#4-analyze-structure).
+
+**Where ChopChopMF saves things:**
+
+| What | Default location | Changeable? |
+|---|---|---|
+| Investigate's `<structure-name>.chopchop.json` ("chart file") | ChopChopMF's shared download folder (see below) | Yes - centrally in the **Setup** toolbar tool's **Change…** (load a different/earlier file) and **Save Session As…** (timestamped snapshot), both per model |
+| PDBePISA `.defattr` files (interface class, ΔG coloring) | Next to the loaded PISA XML file | Yes - centrally in the **Setup** toolbar tool, applies to both PDBePISA tabs |
+| ChopMissense `MissenseScores.defattr` | Inside `<uniprot_id>_hotspots/`, in the shared download folder | Yes - via the shared download folder (see below); no dedicated field of its own |
+| Batch Analysis / PAE Analysis / Investigate CSV, AI-analysis Markdown | The shared **export folder** (see below) by default, but always asks | Yes - the suggested folder is set centrally in the **Setup** toolbar tool |
+
+!!! info "The shared \"download folder\" and \"export folder\""
+    Several tools (AlphaMissense fetch, Sequence, ChopMissense, Investigate) remember **one common download folder** for the whole session, defaulting to your system's **Downloads** folder - change it once, in AlphaMissense fetch's/Sequence's own field or centrally in the **Setup** toolbar tool, and every one of those tools uses the new location from then on. A separate **export folder** setting (also in **Setup**, defaulting to Downloads too) is just the suggested starting folder for CSV/Markdown "Save As" dialogs - those still ask every time.
+
+**The `.chopchop.json` "chart file" is the important one to understand**: it's the *durable* record behind Investigate's Chart. A live ChimeraX residue attribute (what PDBePISA/PAE Analysis/ChopMissense/AlphaSync actually compute) only exists while that structure is open in the current session - closing and reopening the file loses it. Every time you open or refresh Investigate's Chart, it takes a snapshot of whatever any tool has currently computed and writes it into this JSON file - so the next time you reopen the same structure (even in a brand new ChimeraX session, days later), Investigate's Chart still shows the last-known values, not a blank table. Your own free-text notes live in the same file.
+
+This file is **not automatically session-specific** - it's tied to the structure's filename, so reopening the same structure and recomputing something different overwrites what an earlier session recorded. Use the **Setup** toolbar tool's **Save Session As…** before starting a different analysis on the same structure to keep a timestamped copy, and **Change…** afterwards to load an old copy back and continue from it. See [7. Setup](#7-setup) for details.
+
+---
+
+## :material-cube-scan: ChimeraX
+
+### :material-compass-outline: ChimeraX Guide
 
 !!! abstract "ChimeraX guides for general ChimeraX usage"
     ChimeraX allows you to make beautiful figures in may different styles. ChopChopMF can't cover all of those, if you are new to ChimeraX here are a some Guides, which can help you get started or might inspire you. 
@@ -42,7 +72,7 @@ After [Installation of ChopChopMF](installation.md) and Restarting ChimeraX, you
 
 
 
-### Structural Biology File Formats
+### :material-file-document-multiple-outline: Structural Biology File Formats
 
 [:material-file-check: File Types for ChimeraX](https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/filetypes.html){ .md-button .md-button--primary target="_blank"}
 
@@ -85,9 +115,35 @@ After [Installation of ChopChopMF](installation.md) and Restarting ChimeraX, you
 
 ---
 
-## ChopChopMF Tools
+## :material-toolbox-outline: ChopChopMF Tools
 
-### 1. Alignment
+!!! tip "New: interface scores and cross-tool residue notes"
+
+    Two additions worth knowing about before diving in:
+
+    - **PAE Analysis** now has a dedicated **Scores** tab (pDockQ, LIS/cLIS/iLIS, ipSAE, buried area, H-bonds - each with a **Select** button that jumps straight to the residues behind the number) and a **Plots** tab (pLDDT, ipTM/pTM, PAE matrix), on top of the original contact/residue workflow. See [4. Analyze Structure](#4-analyze-structure).
+    - The new **Investigate** tool pulls together, for any residue, every value any ChopChopMF tool has recorded about it (PDBePISA, ChopMissense, PAE Analysis) plus your own free-text notes - a quick way to see which analyses you've already run on a structure, and which are still worth doing. See [Investigate](#4-analyze-structure).
+
+### :material-routes: Common Workflows
+
+Single tools solve single questions; these chain a few together for the questions that actually come up in practice.
+
+!!! tip "Don't miss Investigate - it's where everything comes together"
+    Every other tool answers one question about one residue, one pair, or one motif. **Investigate** is different: pick a model and its **Chart** shows *every residue at once*, with *every value any ChopChopMF tool has computed for it* side by side in one table - PDBePISA class/ΔG, AlphaMissense pathogenicity, PAE Analysis's interface scores, AlphaSync's SASA/disorder, and now the Cell Biology tools' kinase/signal/TM-helix hits. Ctrl+click any residue in the 3D view for the same information as a per-residue dossier.
+
+    This is the step that turns several separate outputs into one dataset you can actually reason about: scan for a residue that's disordered *and* pathogenic *and* sitting in a confident interface, spot patterns no single tool would show you on its own, and go from "I ran five tools" to "I understand this protein." Whenever you've run more than one tool on a structure, **Investigate is the next stop** - see [4. Analyze Structure → Investigate](#4-analyze-structure).
+
+??? example "Is this predicted complex's interface real, and which mutation sits in it?"
+    1. **PAE Analysis** (Tab 1 → 2): load the prediction, check pDockQ/iLIS for the chain pair - a low score usually means "don't trust this interface," full stop.
+    2. **ChopMissense**: map AlphaMissense pathogenicity onto the structure.
+    3. **Investigate**: Ctrl+click a residue inside the confident interface - if it also has a high pathogenicity score, that's your candidate; note it down right there.
+
+??? example "Cleaning up a large AlphaFold model before deeper analysis"
+    1. **PAE Analysis → 3. Plots → pLDDT per Residue**: spot the low-confidence, likely-disordered stretches.
+    2. **Crop Structure**: remove them, keeping only the well-predicted domain of interest.
+    3. **Foldseek Analysis**: search with the cropped domain - cleaner input means more precise structural hits (see the tip in that section).
+
+### :material-vector-line: 1. Alignment
 Tools to visualize mutations and conservation directly on the 3D structure.
 
 For alignment MUSCLE multiple sequence alignment is used. 
@@ -147,6 +203,8 @@ The semi conservation of Amino acids is in ChopChopMF as in the following table 
 
 **Missense** Performs a multiple sequence alignment of a non-human protein with a human sequence to plot AlphaMissense scores.
 
+:material-school-outline: Background on what these scores mean: AlphaFold Guide's [AlphaMissense](https://lukasinscience.github.io/AlphaFold-Guide/interpreting-results/alphamissense/){:target="_blank"} page.
+
 **How to use it:**
 
 1. Open the non-human structure you want to score (e.g. a mouse or zebrafish ortholog) in ChimeraX.
@@ -173,13 +231,15 @@ The following you should take into consideration, if you are using the **Missens
 
 <br clear="left">
 
-### 2. Fetch PDB
+### :material-cloud-download-outline: 2. Fetch PDB
 Access structural databases through a simplified interface that skips complex fetch commands.
 
 
 
 ![AlphaMissense](assets/ChopGetMissense.png){ align=left width="60" }
 **AlphaMissense** Fetches human protein structures with AlphaMissense scores by UniProt ID or uploaded TSV files.
+
+:material-school-outline: Not sure how to read an AlphaMissense score? See the AlphaFold Guide's [AlphaMissense](https://lukasinscience.github.io/AlphaFold-Guide/interpreting-results/alphamissense/){:target="_blank"} page for the background.
 
 
 === "Analysis"
@@ -220,7 +280,7 @@ AlphaMissense Structures and Scores are downloaded through the:
 <br clear="left">
 
 ![AlphaFold2](assets/AlphaFoldIconChop.png){ align=left width="60" }
-**AlphaFold2** Accesses the AlphaFold database directly, plotting pLDDT scores and providing AlphaSync residue information.
+**AlphaFold2** Accesses the AlphaFold database directly, plotting pLDDT and providing AlphaSync residue information.
 
 !!! info "Two windows open at once — that's expected"
     Clicking the **AlphaFold2** toolbar button opens **two** things: ChimeraX's own built-in **AlphaFold** tool (for fetching/searching/predicting structures) *and* ChopChopMF's **AlphaFold Info** panel described below, which adds pLDDT coloring, UniProt association, and AlphaSync data on top. You'll typically use both together — fetch or open a structure in the first, then color/annotate it in the second.
@@ -240,7 +300,7 @@ AlphaMissense Structures and Scores are downloaded through the:
 
     1. Open or fetch an AlphaFold structure (via the tab above, or any model with B-factor = pLDDT).
     2. Select it in the **Select model to color** dropdown, e.g. `#1 AF-P04637-F1`.
-    3. Click **Color selected model by AlphaFold2 pLDDT score**. The structure is colored per-residue using the confidence scale shown above the button (dark orange = very low, blue = very high).
+    3. Click **Color selected model by AlphaFold2 pLDDT**. The structure is colored per-residue using the confidence scale shown above the button (dark orange = very low, blue = very high).
 
 === "UniProt"
 
@@ -270,13 +330,14 @@ AlphaMissense Structures and Scores are downloaded through the:
     2. Click **ChopChop AlphaSync Residue Data**.
     3. Open the **Residue Data** sub-tab to see the per-residue table (pLDDT, SASA, RSA, surface/core, disorder, secondary structure, contacts).
     4. Not sure what a column means? Check the **Explanation** sub-tab — click any parameter name to expand its definition.
+    5. Want SASA/RSA/surface/disorder/secondary-structure in **Investigate** too, or usable with `color byattribute`/`select`? Back in **Structure Selection**, click **Attach fetched values to this structure**. ChopChopMF first checks that the UniProt sequence position actually matches this structure's own residue numbering (comparing each position's amino acid, chain by chain) before writing anything — if it doesn't match (e.g. a cropped structure, or the wrong UniProt ID), nothing is attached and you'll see exactly why.
 
 
 
 
 <br clear="left">
 
-### 3. Modify Structure
+### :material-content-cut: 3. Modify Structure
 Essential tools for preparing models for downstream analysis.
 
 ![Crop](assets/crop.png){ align=left width="60" }
@@ -350,14 +411,16 @@ Essential tools for preparing models for downstream analysis.
 
 <br clear="left">
 
-### 4. Analyze Structure
+### :material-magnify-scan: 4. Analyze Structure
 A platform for both inexperienced and advanced users to analyze complexes efficiently.
 
 ![PAE](assets/pae_icon.png){ align=left width="60" }
 **PAE Analysis** Rapidly investigates Predicted Aligned Error (PAE) values between selected chains.
 
+:material-school-outline: New to PAE/pLDDT/ipTM? The AlphaFold Guide's [Confidence Metrics](https://lukasinscience.github.io/AlphaFold-Guide/interpreting-results/confidence-metrics/){:target="_blank"} page explains what each number actually means before you start interpreting them here.
 
-=== "1. PAE Contacts"
+
+=== "1. Contacts"
 
     !!! warning "Only one Model can be opened in ChimeraX for evaluating the PAE Contacts!"
         Be aware that only one model/prediction of AlphaFold2 or AlphaFold3 can be opened. Besides the .pdb or .cif structure file you also need the matching .json file from the prediction!
@@ -365,12 +428,43 @@ A platform for both inexperienced and advanced users to analyze complexes effici
     **How to use it:**
 
     1. Open your predicted complex (e.g. an AlphaFold-Multimer `.cif`) — it must be the *only* open model.
-    2. Click **Load .json file** and select the matching PAE `.json` from the same prediction. This opens ChimeraX's own **AlphaFold Error Plot** tool.
+    2. Click **Load .json file** and select the matching PAE `.json` from the same prediction (AlphaFold DB, AlphaFold3, or ColabFold format are all supported). ChopChopMF links the file directly to the open model and confirms it was loaded successfully.
     3. Click **↻ Refresh model list**, then select the two chains you want to check for contacts, e.g. chain `A` and chain `B`.
-    4. Set the **distance** cutoff — `5` Å is a good starting point; avoid going above `8` Å, since protein-protein interactions further apart than that are unlikely to be real contacts.
-    5. Click **ChopChop PAE**. ChopChopMF draws pseudobonds between residue pairs whose predicted error is below the cutoff.
+    4. Set the **contact distance** cutoff — `5` Å is a good starting point; avoid going above `8` Å, since protein-protein interactions further apart than that are unlikely to be real contacts.
+    5. Optionally tick **Limit to residue pairs with PAE ≤** and set a value — `12` Å is the default and a common convention for a *confident* contact (a distance of `8` Å combined with a max PAE of `12` Å is a widely used definition of a high-confidence interface).
+    6. Click **ChopChop PAE**. ChopChopMF draws pseudobonds between residue pairs that pass the distance (and, if enabled, PAE) cutoff.
 
-=== "2. PAE Contact Residues"
+=== "2. Scores"
+
+    A quick, color-coded verdict on the chain pair selected in Tab 1: is this interaction actually worth a closer look?
+
+    **How to use it:**
+
+    1. Select two chains in Tab 1 (a loaded `.json` file is only needed for the LIS/cLIS/iLIS row, not for the others).
+    2. Click **↻ Refresh Scores**. Each score is shown with its own **Select** button, so you can jump straight from a number to the actual residues behind it in the 3D view:
+        - **pDockQ** with a colored badge (Bryant, Pozzati & Elofsson, 2022): green = high confidence (> 0.5), amber = weak/medium (0.23–0.5), red = poor (< 0.23). **Select contacts** selects and highlights the contact residues as sticks. Note: pDockQ is derived from contact count and pLDDT only — it does not read the PAE matrix, despite living in this PAE-focused tool.
+        - **Buried area**, computed with ChimeraX's own built-in `measure buriedarea` — shown as a plain number, since there's no universal "good/bad" cutoff for it in the literature. Also contact-geometry-based, not PAE-based.
+        - **H-bonds**, computed with ChimeraX's own built-in `hbonds`. **Select H-bonds** selects them and colors each one by its own length — green = shorter/stronger, red = longer/weaker within the found set. Also not PAE-based.
+        - **LIS / cLIS / iLIS** (Kim et al., 2024) once a PAE `.json` is loaded, with iLIS ≥ 0.223 badged as a high-confidence interaction. **Select confident pairs** selects only the residues involved in a cLIS-qualifying pair (PAE ≤ 12 Å and Cβ–Cβ distance ≤ 8 Å) — the residues actually responsible for a high iLIS.
+        - **ipSAE (d0chn)** (Dunbrack, [github.com/DunbrackLab/IPSAE](https://github.com/DunbrackLab/IPSAE)) once a PAE `.json` is loaded — shown as a plain number, since there's no established confidence threshold specifically for this fixed chain-length variant (only the adaptive full ipSAE metric has one, and it isn't implemented here).
+        - **Contact PAE**, once a PAE `.json` is loaded — the *actual* PAE value (Å), not a derived score: for each contact residue, the real PAE reading to its partner chain averaged over its contacts, using the same direction ChimeraX itself uses to color the PAE contact pseudobonds in Tab 1. Shown as the average over all contact residues, colored on the same blue-to-white scale as the PAE Matrix plot. Roughly ≤12 Å is confident (Tab 1's own default contact cutoff), values near/above 20 Å are uncertain. The per-residue values (not just this average) are recorded on each contact residue and show up individually, color-coded, in Investigate.
+    3. Click **Deselect** to clear the selection and reset any highlighted residues back to a neutral color, **Open residue table** to inspect the current selection (chain, residue number, name, pLDDT) in a sortable, exportable popup, or **Export scores as CSV…** to save the aggregate values for a spreadsheet or lab notebook.
+
+    Switching between Select buttons (or different chain pairs) always resets the previous highlight first, so only the residues behind the metric you just clicked are ever shown.
+
+    See [Acknowledgements](acknowledgements.md#citations-for-interface-scores) for the full citations of every score.
+
+=== "3. Plots"
+
+    A quick visual check of the model's confidence, without leaving ChopChopMF.
+
+    **How to use it:**
+
+    1. Open your model (and, for the PAE-based plots, load its `.json` file in Tab 1 first).
+    2. Two sections are available: **pLDDT per Residue** (from the structure directly — works even without a loaded PAE file) and **ipTM / pTM** (only shown if present in the loaded `.json` — common for ColabFold, usually not available for AlphaFold3, whose confidence values live in a separate summary file), each bar colored green/amber/red for >0.8 / 0.6–0.8 / <0.6, the same traffic-light convention as the AlphaFold Guide's Confidence Metrics page. The **PAE Matrix** section shows the full error heatmap, with chain boundaries marked.
+    3. Click **Open Figure** under any of them to draw the current data in its own larger, freely resizable window (drawn fresh each time, so it's always up to date). That window has a **Save…** button to export the plot as a PNG, PDF, or SVG file.
+
+=== "4. Residues"
 
     You saw some interesting or promising results with **ChopChop PAE**? Now you would like to see the side chains of the pseudobonds with a good (blue) score?
 
@@ -378,9 +472,16 @@ A platform for both inexperienced and advanced users to analyze complexes effici
 
     1. Run **ChopChop PAE** in the first tab first, so a "PAE Contacts" pseudobond model exists.
     2. Click **ChopChop PAE interaction Residues**. The contact residues are selected, shown as sticks, and colored by chain/heteroatom for a closer look.
+    3. By default the "PAE Contacts" pseudobond model is deleted afterwards to keep the scene tidy. Untick **Remove 'PAE Contacts' model after selecting** first if you want to keep inspecting or coloring the pseudobonds themselves.
 
     A much more precise analysis of the PAE can be performed outside the ChimeraX environment with the [  **PAE Viewer** ](https://pae-viewer.uni-goettingen.de/){:target="_blank"}
 
+??? example "Example: judging a predicted A-B interface end to end"
+    1. Open the AlphaFold-Multimer prediction, then **Load .json file** (Tab 1).
+    2. Pick chain `A`/`B`, leave distance at `5` Å and PAE-limit at `12` Å, click **ChopChop PAE**.
+    3. Switch to **2. Scores**, click **↻ Refresh Scores** — a green pDockQ badge (> 0.5) and iLIS ≥ 0.223 together are a strong sign the interface is real, not a prediction artifact.
+    4. Click **Select contacts** to see exactly which residues drive that score, then **Open residue table** to export them for a lab notebook.
+    5. Curious whether the confident region is well-folded, not just well-predicted-as-a-pair? Check **3. Plots → pLDDT per Residue** for the same chains.
 
 <br clear="left">
 
@@ -415,7 +516,7 @@ A platform for both inexperienced and advanced users to analyze complexes effici
 
     1. **Select the target model:** pick the model the XML residues belong to, e.g. `Model 1`. Click **↻ Refresh model list** if it isn't listed.
     2. **Load Data:** Click **Select PDBePISA XML File** and upload the file you just downloaded.
-    3. **Map Interfaces:** Loading the file already selects and colors the interface residues in darkorange. To (re-)apply the full 3-way scoring, click **ChopChop PISA Interfaces** and select the `_output.defattr` file that was written next to your XML.
+    3. **Map Interfaces:** Loading the file already selects and colors the interface residues in darkorange. To (re-)apply the full 3-way scoring, click **ChopChop PISA Interfaces** and select the `_output.defattr` file - by default written next to your XML, or in the folder set centrally in ChopChopMF's **Setup** toolbar tool (applies to this tab and the ΔG Filter tab below; the label here shows the current value but isn't editable in-tab anymore - see [7. Setup](#7-setup)).
     4. **Scoring Scheme:** The tool automatically categorizes residues based on:
 
         * <span style="color:darkorange">■</span> **Buried:** Residues hidden in the interface.
@@ -453,15 +554,16 @@ A platform for both inexperienced and advanced users to analyze complexes effici
 
     ---
 
-    !!! example "Understanding the Data"
+    ??? example "Understanding the Data"
 
         * **Source:** Values are read directly from the `SOLVATIONENERGY` field in the XML.
 
         * **Exclusions:** Residues with ΔG = 0.0 or a `BURIEDSURFACEAREA = 0` are automatically excluded to avoid noise from non-interfacing residues.
 
-
-
-
+    ??? example "Example: finding the hotspot residues of one interface"
+        1. Get the XML from the PDBePISA website (see the tip above), pick `Model 1` in **Interface Scoring**, load it.
+        2. Click **ChopChop ΔG Coloring**, then **Plot ΔG Values** - the scatter plot's outliers on the destabilizing side are your hotspots.
+        3. Set the **ΔG Cutoff** slider just below the lowest outlier's value, tick **Only show residues ≥ cutoff** - only the hotspots stay colored in the 3D view.
 
 
 
@@ -495,7 +597,107 @@ Foldseek was great, but you are looking for more tools? There is more to explore
 
 <br clear="left">
 
-### 5. Undo
+![Investigate](assets/investigate.png){ align=left width="60" }
+**Investigate** Brings together, for one residue, everything every ChopChopMF tool has recorded about it - a cross-tool "residue dossier" - plus your own notes.
+
+The **Annotations file** row under the model picker shows where notes and computed values for the selected model are saved - by default `<structure name>.chopchop.json` in your ChopChopMF download folder (the same folder remembered by the Sequence/AlphaMissense tools). This one file is used continuously every time you open that structure - it is *not* automatically session-specific, so redoing an analysis differently in a later session overwrites what an earlier session recorded there. To save a timestamped snapshot or load an earlier one back, use ChopChopMF's **Setup** toolbar tool (see [7. Setup](#7-setup)) - the **↻** button next to the label here just refreshes what it shows.
+
+=== "Residue"
+
+    1. Pick a **Model** and click **↻ Refresh model list** if needed.
+    2. **Ctrl+click** an atom in the 3D view to select and inspect its residue (ChimeraX's own selection shortcut - a plain click just rotates the view; Ctrl+Shift+click adds to the selection, but Investigate only shows a single selected residue at a time). You can also use another tool's Select button instead (e.g. PDBePISA's interface coloring or PAE Analysis's "Select contacts") - Investigate follows any selection, from any source. The highlighted blue bar shows which residue is currently shown. Investigate shows the residue's **pLDDT** (color-coded, from the structure itself) plus every custom value recorded for it by any tool (e.g. PDBePISA's `residue_score`, ChopMissense's `MissenseScores`) - PAE Analysis's pDockQ and iLIS values are color-coded here too, the same green/amber/red badge as PAE Analysis's own Scores tab, and its "PAE (Å)" value (the real per-residue PAE reading, not a derived score) is colored on the PAE Matrix's own blue-to-white scale.
+    3. Type a note and click **Save note** to attach your own free-text observation to that residue (one note per residue - saving again replaces it, clearing the field and saving removes it).
+
+=== "Chart"
+
+    A full residue table only really works in a big window, so this tab is just a launcher - click **Open Chart** for every residue of the selected model at once, with:
+
+    - Its own **Model** selector at the top - independent of the Residue tab's, so you can flip the Chart between any open model without disturbing whatever's selected in the background window, useful for comparing two models side by side (open the Chart twice, pick a different model in each).
+    - A **search box** that filters the table to residue numbers containing what you type (e.g. `117`), live as you type - clear it to see every residue again.
+    - **pLDDT**, always shown and color-coded (red/orange/yellow/blue, the same confidence bands ChimeraX itself uses) - straight from the structure, no other tool needs to have run first. **Interface pDockQ** and **PAE iLIS** are color-coded too, wherever set (same citable green/amber/red badge as PAE Analysis's Scores tab), and **PAE (Å)** is color-coded on the same continuous blue-to-white scale as the PAE Matrix plot. Only columns named **PAE …** actually read the PAE matrix itself (LIS/cLIS/iLIS, ipSAE, the cLIS contact flag, and PAE (Å)) - **Interface pDockQ/Buried area/H-bonds/contact** are contact-geometry- and pLDDT-based and don't depend on PAE at all, despite living in the same tool. All of pDockQ/Buried area/H-bonds/LIS/cLIS/iLIS/ipSAE are a single value for the *whole interface*, not per-residue math - they only appear on the actual contact residues (the same ones "Select contacts" highlights), left blank everywhere else, so the same number doesn't misleadingly show up on every residue of both chains.
+    - A column for **every value another ChopChopMF tool can produce** - PDBePISA class, PDBePISA ΔG, AlphaMissense, Interface contact, PAE cLIS, PAE (Å), AlphaSync SASA/RSA/Surface/Disorder/Sec. Str. - always shown, even *before* that tool has been run (blank until then), so the table itself tells you which analyses are still worth doing for this structure. Any other custom value picked up automatically gets its own column too.
+    - An **editable Notes column** (double-click a cell, type, press Enter to save - every other column is read-only). Editing a note here or in the Residue tab updates the same underlying note.
+    - **↻ Refresh**, **Export as CSV…** (this model only, a one-way spreadsheet export), **Export as CSV… (all models)** (every residue of every open model in one file, using only the fixed known-tool columns so rows from different models always line up), and **Export for AI analysis…** (asks what you want the AI to look at or answer, then writes a Markdown file with that question up front, references to this guide, the AlphaFold Guide, and the ChimeraX FigureStyle guide - with an explicit instruction to actually read them, not just note them - a short explanation of what each column means, and your notes - ready to paste straight into Claude, ChatGPT, or Gemini; nothing is sent anywhere by ChopChopMF itself). To snapshot or reload the underlying `.chopchop.json` itself, use ChopChopMF's **Setup** toolbar tool (see [7. Setup](#7-setup)).
+    - Every value shown here - from any tool - is also durably saved into that same `.chopchop.json` file each time the Chart is opened or refreshed, so it's still there the next time you reopen this structure, even in a brand new ChimeraX session. See [Input & Output Files](#input-output-files) for the full picture.
+
+=== "Plots"
+
+    Two visual ways to spot interesting residues without reading every row of the Chart yourself.
+
+    - **Attribute Coverage** - a heatmap, one row per residue and one column per value any ChopChopMF tool can produce (pLDDT plus the same fixed columns as the Chart). Gray means that tool hasn't recorded anything for this residue yet; teal means it has, colored by how strong that value is relative to the rest of the structure. A residue with several teal columns in a row has evidence from multiple tools at once - exactly the residues worth a closer look in the Residue tab.
+    - **Compare Two Values** - pick any two numeric values (e.g. **pLDDT** vs. **AlphaMissense**) from the dropdowns and click **Open Figure** for a scatter plot, one dot per residue that has both values. Useful for spotting residues that are unusual on *both* axes at once (e.g. low pLDDT *and* high pathogenicity) - something a table of numbers doesn't show at a glance. **Click any point** to select that residue - jumps straight to its Residue-tab dossier.
+
+    Both figures open in their own floating window with a **Save…** button (PNG/PDF/SVG), same as PAE Analysis's Plots tab.
+
+??? example "Example: reviewing a candidate mutation with evidence from three tools"
+    1. Run **ChopMissense** for pathogenicity and **PDBePISA** for interface class/ΔG on your structure - each writes its result onto the residues automatically.
+    2. Open **Investigate**, pick the model, Ctrl+click the residue in question.
+    3. The **Residue** tab now shows pLDDT plus both tools' values side by side - a much faster way to judge "is this residue interesting?" than switching between three tabs.
+    4. Type a note (e.g. "R117H, patient variant, high AlphaMissense + buried") and **Save note**.
+    5. Open the **Chart** and search the residue number to double-check it against neighboring positions at a glance.
+
+<br clear="left">
+
+![Batch Analysis](assets/batch_analysis.png){ align=left width="60" }
+**Batch Analysis** Runs PAE Analysis's interface scores (pDockQ, buried area, H-bonds, LIS/cLIS/iLIS, ipSAE d0chn) across many models at once, instead of one chain pair at a time.
+
+!!! tip "PAE files are loaded for you when possible"
+    For **AlphaFold3-server** output (files named `..._model_N.cif` next to `..._full_data_N.json`, the server's own fixed naming convention), Batch Analysis finds and loads the matching PAE file automatically - no need to open PAE Analysis first. For any other format (ColabFold, local AlphaFold-Multimer), load each model's `.json` once via PAE Analysis's own **Load .json file** first - a model with no PAE data either way is listed as "skipped: no PAE data loaded", never guessed at.
+
+**Two ways to feed it, under the Input dropdown:**
+
+- **Already-open models** - scores whatever's currently open in ChimeraX. Good for a handful of models you're already looking at.
+- **Folder of files** - point it at a folder of `.cif`/`.pdb` files and it opens, scores, and closes each one automatically, one at a time, before moving to the next. Nothing needs to stay open - this is the one to use for more than a few predictions at once, since PAE Analysis itself only ever works with exactly one open model at a time; Batch Analysis's folder mode exists specifically so a large batch never has to fight that limitation by hand.
+
+**How to use it:**
+
+1. Pick **Input**: "Already-open models" (if you've already opened what you want scored) or "Folder of files" (**Browse…** to a folder - AlphaFold3-server files in it get their PAE data automatically; other formats need loading via PAE Analysis first, same as above).
+2. Pick a **Chain rule**:
+    - **Same chain letters on every model** - type the two chain letters once (e.g. `A` and `B`) and every model uses those same letters. Works when your batch is a set of predictions that all share one chain-naming convention (the common case for repeated bait-vs-partner screens).
+    - **First chain(s) = side 1, last chain = side 2 (PPIScreenML-style)** - for batches whose models don't all share one convention (e.g. different numbers of chains per model): every chain except the last becomes side 1, the last chain becomes side 2. Ligand/ion "chains" (e.g. a bound ATP or Mg²⁺ in an AlphaFold3 prediction) are automatically excluded from both sides - only actual protein chains are considered.
+3. Click **Run Batch**. Each model gets one row: the scores if everything matched, or a `skipped`/`error` status explaining why not.
+4. **Export as CSV…** to save the aggregated table for a spreadsheet or further analysis.
+
+??? example "Example: ranking several AlphaFold3-server seeds of the same complex"
+    1. **Input: Folder of files**, browse to the folder holding a job's predicted seeds (e.g. `fold_mycomplex_model_0.cif` through `..._model_4.cif`) - no need to open any of them yourself, or load any `.json` first.
+    2. Set the chain letters for your complex (or use the PPIScreenML-style rule if the chain count varies), click **Run Batch** - each seed opens, scores, and closes in turn.
+    3. One row per seed - sort by pDockQ/iLIS in the exported CSV to pick the best-scoring prediction instead of opening each one individually in PAE Analysis.
+
+??? example "Example: comparing the same bait against three already-open partners"
+    1. **Input: Already-open models** - predict (elsewhere) and open three AlphaFold-Multimer complexes, all with the bait as chain A and a different partner as chain B, and load each one's PAE `.json`.
+    2. Leave the rule on "Same chain letters", type `A` and `B`, click **Run Batch** - one row per complex, so you can compare pDockQ/iLIS across all three partners at a glance instead of re-running PAE Analysis three times by hand.
+
+<br clear="left">
+
+### :material-dna: 5. Cell Biology
+
+**Phospho Sites, Signal Peptide, TM Helix** Three sequence-motif finders for a chosen chain, each opened via its own toolbar icon in the **Cell Biology** section.
+
+!!! warning "Heuristic motif match, not a calibrated prediction"
+    All three tools flag residues with hand-written regex approximations of published consensus motifs - unlike a trained predictor (SignalP, TMHMM, NetPhos), a hit here means "matches this literature-derived pattern", not a probability. See [Acknowledgements](acknowledgements.md#citations-for-cell-biology-motifs) for the exact source and any approximation made for every motif.
+
+**How to use them:**
+
+1. Pick a **Model : Chain** from the dropdown (use **↻ Refresh model list** after opening/closing models).
+2. Adjust the filter thresholds if needed, then click the **Find…** button.
+3. Matching residues are selected, styled, and colored directly in the 3D view; click **Show Results…** for a sortable table of every hit.
+4. Every hit is also written as a residue attribute, so it shows up as its own column in **Investigate** (`Phospho kinase(s)`, `Signal/targeting organelle`, `TM helix`).
+
+![Phospho Sites](assets/phospho_icon.png){ align=left width="60" }
+**Phospho Sites** - scans for kinase consensus motifs (ATM/ATR, PKA, PKC, CDK, CK2, GSK3, MAPK, AKT, AMPK), keeping only Ser/Thr/Tyr residues that are both disordered (pLDDT below a threshold) and solvent-exposed (SASA above a threshold) - a real phospho-acceptor site needs to be both.
+
+<br clear="left">
+
+![Signal Peptide](assets/signal_icon.png){ align=left width="60" }
+**Signal Peptide** - scans for subcellular targeting-signal motifs (nuclear import/export, ER retention, peroxisomal import), keeping only surface-exposed matches, plus a separate N-terminal charge-based heuristic for a mitochondrial import signature (shown in the results window, not colored in 3D).
+
+<br clear="left">
+
+![TM Helix](assets/tm_helix_icon.png){ align=left width="60" }
+**TM Helix** - runs DSSP, groups consecutive alpha-helices, and flags runs above a length and mean-hydrophobicity (Kyte & Doolittle) threshold as candidate transmembrane helices. When ChimeraX's own `mlp` lipophilicity data is available, the results table also shows a SASA-weighted lipophilicity score per helix - a stronger signal than residue identity alone, since it reflects which face of the helix is actually solvent/membrane-facing.
+
+<br clear="left">
+### :material-undo-variant: 6. Undo
 
 ![Undo](assets/ChopUndo.png){ align=left width="60" }
 **Undo** A one-click shortcut for ChimeraX's own `undo` command, right in the ChopChopMF toolbar.
@@ -506,3 +708,24 @@ Foldseek was great, but you are looking for more tools? There is more to explore
     ChimeraX's undo covers most commands, but **not** destructive structural edits made through ChopChopMF's **Crop Structure** or **Duplicate Structure → Delete Chain** tools — those deletions are terminal (see the warnings in [Modify Structure](#3-modify-structure) above).
 
 <br clear="left">
+
+### :material-cog-outline: 7. Setup
+
+![Setup](assets/setup.png){ align=left width="60" }
+**Setup** The one place for every location ChopChopMF tools save output to or read a saved session back from - instead of hunting through each tool's own tab for its "change folder" field.
+
+**How to use it:**
+
+1. **Shared Locations** - three folders, each shown in a text field with its own **Browse…** button (typing a path directly also works - it's picked up when you click elsewhere or press Enter):
+    - **Download folder** - the same setting AlphaMissense fetch's and Sequence's own fields already edit; also used by ChopMissense and PDBePISA's UniProt/XML lookups. Change it here or in either of those tools - they all stay in sync, since it's one shared value.
+    - **Export folder (CSV/Markdown suggestions)** - where PAE Analysis's, Batch Analysis's, and Investigate's "Save As" dialogs start by default. They still ask every time; this only changes the suggested folder instead of always starting at your home folder.
+    - **PDBePISA .defattr output folder** - where both of PDBePISA's `.defattr` files (interface class and ΔG coloring) are written. Leave empty for the default (next to the loaded PISA XML file), or use **Reset to default** to clear it. PDBePISA's own tab shows this same value as a read-only label - change it here, not there.
+2. **Model Annotations (Investigate Sessions)** - pick a model to see and manage its `.chopchop.json` file, the durable record behind Investigate's Chart:
+    - **Save Session As…** snapshots the current file to a new, timestamped copy - the live file keeps being used/updated as normal, so this is purely a checkpoint to come back to later, and an earlier session's results can never be silently overwritten by a later one.
+    - **Change…** points the live file at a different path - pick an existing `*.chopchop.json` (e.g. one saved earlier with **Save Session As…**) to load that session back and keep working in it, or a new filename to start fresh without touching the current file.
+
+!!! info "Why this matters for `.chopchop.json`"
+    This file is tied to the structure's filename and used continuously every time you reopen that structure - it is **not** automatically session-specific. Redoing an analysis differently in a later session overwrites what an earlier session recorded there unless you save a checkpoint first with **Save Session As…**.
+
+<br clear="left">
+

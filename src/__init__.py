@@ -31,7 +31,7 @@ class ChopChopMFAPI(BundleAPI):
     def start_tool(session, bi, ti):
         # Log version only once per ChimeraX session
         if not ChopChopMFAPI._version_logged:
-            session.logger.info("ChopChopMF-1.3")
+            session.logger.info("ChopChopMF-1.4")
             ChopChopMFAPI._version_logged = True
 
         # Start the corresponding tool based on the name in bundle_info.xml.
@@ -73,7 +73,31 @@ class ChopChopMFAPI(BundleAPI):
         elif tool_name == "Foldseek Analysis":
             from .foldseekanalysis import FoldseekAnalysis
             return FoldseekAnalysis(session, tool_name)
-            
+
+        elif tool_name == "Investigate":
+            from .investigate import Investigate
+            return Investigate(session, tool_name)
+
+        elif tool_name == "Batch Analysis":
+            from .batch_analysis import BatchAnalysis
+            return BatchAnalysis(session, tool_name)
+
+        elif tool_name == "Setup":
+            from .chopchop_settings import ChopChopSettings
+            return ChopChopSettings(session, tool_name)
+
+        elif tool_name == "Phospho Sites":
+            from .phospho_sites import PhosphoSites
+            return PhosphoSites(session, tool_name)
+
+        elif tool_name == "Signal Peptide":
+            from .signal_peptide import SignalPeptide
+            return SignalPeptide(session, tool_name)
+
+        elif tool_name == "TM Helix":
+            from .transmembrane_helix import TransmembraneHelix
+            return TransmembraneHelix(session, tool_name)
+
         elif tool_name == "Undo":
             session.logger.info("Undoing last action...")
             run(session, "undo")
@@ -120,7 +144,31 @@ class ChopChopMFAPI(BundleAPI):
         elif class_name == "FoldseekAnalysis":
             from .foldseekanalysis import FoldseekAnalysis
             return FoldseekAnalysis
-        
+
+        elif class_name == "Investigate":
+            from .investigate import Investigate
+            return Investigate
+
+        elif class_name == "BatchAnalysis":
+            from .batch_analysis import BatchAnalysis
+            return BatchAnalysis
+
+        elif class_name == "ChopChopSettings":
+            from .chopchop_settings import ChopChopSettings
+            return ChopChopSettings
+
+        elif class_name == "PhosphoSites":
+            from .phospho_sites import PhosphoSites
+            return PhosphoSites
+
+        elif class_name == "SignalPeptide":
+            from .signal_peptide import SignalPeptide
+            return SignalPeptide
+
+        elif class_name == "TransmembraneHelix":
+            from .transmembrane_helix import TransmembraneHelix
+            return TransmembraneHelix
+
         else:
             raise ValueError(f"Unknown class name '{class_name}'")
 
@@ -163,7 +211,31 @@ class ChopChopMFAPI(BundleAPI):
             elif name == "Foldseek Analysis":
                 from .foldseekanalysis import FoldseekAnalysis
                 return FoldseekAnalysis(session, name)
-            
+
+            elif name == "Investigate":
+                from .investigate import Investigate
+                return Investigate(session, name)
+
+            elif name == "Batch Analysis":
+                from .batch_analysis import BatchAnalysis
+                return BatchAnalysis(session, name)
+
+            elif name == "Setup":
+                from .chopchop_settings import ChopChopSettings
+                return ChopChopSettings(session, name)
+
+            elif name == "Phospho Sites":
+                from .phospho_sites import PhosphoSites
+                return PhosphoSites(session, name)
+
+            elif name == "Signal Peptide":
+                from .signal_peptide import SignalPeptide
+                return SignalPeptide(session, name)
+
+            elif name == "TM Helix":
+                from .transmembrane_helix import TransmembraneHelix
+                return TransmembraneHelix(session, name)
+
             elif name == "Undo":
                 run(session, "undo")
                 return None

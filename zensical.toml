@@ -1,0 +1,53 @@
+[project]
+site_name = "ChopChopMF Guide"
+site_url = "https://LUKASinScience.github.io/ChopChopMF/"
+repo_url = "https://github.com/LUKASinScience/ChopChopMF"
+repo_name = "LUKASinScience/ChopChopMF"
+
+nav = [
+  { "Home" = "index.md" },
+  { "Installation" = "installation.md" },
+  { "Usage" = "usage.md" },
+  { "Acknowledgements" = "acknowledgements.md" },
+]
+
+extra_css = ["stylesheets/extra.css"]
+
+[project.theme]
+variant = "modern"
+logo = "assets/logo.png"
+favicon = "assets/logo.png"
+features = [
+  "navigation.sections",
+  "navigation.expand",
+  "content.code.copy",
+  "navigation.top",
+]
+
+[project.theme.font]
+text = "Inter"
+code = "JetBrains Mono"
+
+[[project.theme.palette]]
+scheme = "default"
+primary = "teal"
+accent = "custom"
+toggle.icon = "material/brightness-7"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+scheme = "slate"
+primary = "teal"
+accent = "custom"
+toggle.icon = "material/brightness-4"
+toggle.name = "Switch to light mode"
+
+[project.markdown_extensions]
+admonition = {}
+attr_list = {}
+pymdownx.superfences = {}
+md_in_html = {}
+pymdownx.tabbed.alternate_style = true
+pymdownx.details = {}
+pymdownx.emoji.emoji_index = "zensical.extensions.emoji.twemoji"
+pymdownx.emoji.emoji_generator = "zensical.extensions.emoji.to_svg"

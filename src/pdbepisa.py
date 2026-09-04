@@ -45,7 +45,8 @@ from Qt.QtGui import QFont
 import xml.etree.ElementTree as ET
 import webbrowser
 import os
-from .utils import make_scrollable, make_guide_button, show_error
+from pathlib import Path
+from .utils import make_scrollable, make_guide_button, show_error, get_settings
 
 # ---- plotting ----
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -121,6 +122,7 @@ class PDBePISA(ToolInstance):
 
         # ΔG state for multi-file handling
         self.dg_xml_data = {}        # {basename.xml: parsed XML root}
+        self.dg_xml_paths = {}       # {basename.xml: full Path} - so the defattr can be written next to it
         self.active_dg_file = None   # name of the active XML in the dropdown
         self.append_mode = False     # cumulative vs. single-file coloring
 
@@ -129,8 +131,38 @@ class PDBePISA(ToolInstance):
         self._epsilon = 0.01
         self._neutral_color = "lightgrey"
 
+        # Where .defattr output files are written (both tabs) - backed by the
+        # persistent, shared "defattr_output_dir" setting (see the property
+        # below), not a plain instance attribute, so it can be seen/changed
+        # centrally in ChopChopMF's Settings toolbar tool even while this
+        # tool isn't open. "" (falsy) means the default: next to the loaded
+        # XML file. Kept live via a settings-changed listener so the label
+        # here updates immediately if changed from the Settings tool.
+        self._settings_handler = get_settings(session).triggers.add_handler(
+            "setting changed", self._on_settings_changed
+        )
+
         self._build_tabs()
         self.tool_window.manage('side')
+
+    def delete(self):
+        if self._settings_handler is not None:
+            get_settings(self.session).triggers.remove_handler(self._settings_handler)
+            self._settings_handler = None
+        super().delete()
+
+    def _on_settings_changed(self, trigger_name, data):
+        name, _old_value, _new_value = data
+        if name == "defattr_output_dir":
+            self._refresh_defattr_output_label()
+
+    @property
+    def defattr_output_dir(self):
+        return get_settings(self.session).defattr_output_dir or None
+
+    @defattr_output_dir.setter
+    def defattr_output_dir(self, value):
+        get_settings(self.session).defattr_output_dir = value or ""
 
     # ---- window / tabs ----
     def _build_tabs(self):
@@ -195,6 +227,16 @@ class PDBePISA(ToolInstance):
         chop_button.clicked.connect(self.chopchop_interfaces)
         layout.addWidget(chop_button)
 
+        self.defattr_output_label = QLabel("")
+        self.defattr_output_label.setStyleSheet("color: gray; font-size: 10px;")
+        self.defattr_output_label.setWordWrap(True)
+        self.defattr_output_label.setToolTip(
+            "Where .defattr files (this tab and the ΔG Filter tab) are saved - "
+            "change it centrally in ChopChopMF's Settings toolbar tool."
+        )
+        layout.addWidget(self.defattr_output_label)
+        self._refresh_defattr_output_label()
+
         layout.addWidget(QLabel("Scoring Scheme:"))
         color_bar = QVBoxLayout()
         colors = [
@@ -235,6 +277,12 @@ class PDBePISA(ToolInstance):
         tab1 = QWidget()
         tab1.setLayout(layout)
         return tab1
+
+    def _refresh_defattr_output_label(self):
+        if self.defattr_output_dir:
+            self.defattr_output_label.setText(f".defattr output folder: {self.defattr_output_dir}")
+        else:
+            self.defattr_output_label.setText(".defattr output folder: next to the loaded XML file (default)")
 
     def select_file(self):
         xml_file, _ = QFileDialog.getOpenFileName(
@@ -348,7 +396,10 @@ class PDBePISA(ToolInstance):
             self.session.logger.info("Colored selected residues in darkorange.")
 
     def write_defattr_file(self, defattr_lines, xml_file):
-        output_file = os.path.splitext(xml_file)[0] + "_output.defattr"
+        if self.defattr_output_dir:
+            output_file = str(Path(self.defattr_output_dir) / (Path(xml_file).stem + "_output.defattr"))
+        else:
+            output_file = os.path.splitext(xml_file)[0] + "_output.defattr"
         try:
             with open(output_file, 'w') as file:
                 for line in defattr_lines:
@@ -633,6 +684,7 @@ class PDBePISA(ToolInstance):
 
         base = os.path.basename(fname)
         self.dg_xml_data[base] = root
+        self.dg_xml_paths[base] = fname
 
         # Update dropdown if new
         existing = [self.dg_selector.itemText(i) for i in range(self.dg_selector.count())]
@@ -739,8 +791,17 @@ class PDBePISA(ToolInstance):
                 attr_lines.append(f"\t/{chain_id}:{res_num}\t{dg_val:.3f}\n")
                 to_select.append(f"#{model_id}/{chain_id}:{res_num}")
 
-        # Write defattr and apply
-        output_file = "dg_coloring_output.defattr"
+        # Write defattr and apply - next to the source XML file, not ChimeraX's
+        # working directory (a bare filename here previously wrote wherever
+        # ChimeraX happened to be launched from, effectively unpredictable).
+        xml_path = self.dg_xml_paths.get(self.active_dg_file)
+        if self.defattr_output_dir:
+            stem = Path(xml_path).stem if xml_path else "dg_coloring"
+            output_file = str(Path(self.defattr_output_dir) / f"{stem}_dg_coloring.defattr")
+        elif xml_path:
+            output_file = os.path.splitext(xml_path)[0] + "_dg_coloring.defattr"
+        else:
+            output_file = "dg_coloring_output.defattr"
         try:
             with open(output_file, 'w') as f:
                 f.writelines(attr_lines)

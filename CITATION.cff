@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use ChopChopMF in your work, please cite it as below."
+title: "ChopChopMF"
+type: software
+authors:
+  - given-names: "Lukas W."
+    family-names: "Bauer"
+    email: "lukasinscience@gmail.com"
+  - given-names: "Ricarda"
+    family-names: "Erhart"
+    affiliation: "ISTA Bioinformatics"
+  - given-names: "Florian K. M."
+    family-names: "Schur"
+repository-code: "https://github.com/LUKASinScience/ChopChopMF"
+url: "https://lukasinscience.github.io/ChopChopMF/"
+license: AGPL-3.0-only
+version: "1.4"
+date-released: "2026-09-02"
+keywords:
+  - ChimeraX
+  - structural biology
+  - AlphaFold
+  - protein structure analysis

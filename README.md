@@ -16,7 +16,10 @@ After installing ChopChopMF, please close and restart ChimeraX. The full install
 
 ## Latest Version
 
-Version 1.3 — see [CHANGELOG.md](CHANGELOG.md) for what's new.
+Version 1.4 — see [CHANGELOG.md](CHANGELOG.md) for what's new.
 
 ## ChopChopMF on ChimeraX Toolshed 
 [ChopChopMF on ChimeraX](https://cxtoolshed.rbvi.ucsf.edu/apps/chimeraxchopchopmf)
+
+## Citations
+The PAE Analysis tool's Interface Scores (pDockQ, LIS/cLIS/iLIS) implement published methods — if you use them, please cite the original sources listed in [Acknowledgements](https://lukasinscience.github.io/ChopChopMF/acknowledgements/#citations-for-interface-scores).

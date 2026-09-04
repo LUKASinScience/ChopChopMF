@@ -8,8 +8,9 @@ dist/
 # ChimeraX bundle build artifacts
 *.whl
 
-# MkDocs
+# MkDocs / Zensical
 site/
+.cache/
 
 # OS junk
 .DS_Store
@@ -22,3 +23,11 @@ Thumbs.db
 
 # Local staging file for ChimeraX Toolshed submissions (not part of the repo history)
 TOOLSHED_RELEASE_NOTES.md
+local_readme.md
+
+# Claude Code working files - local only, never pushed
+CLAUDE.md
+claude_progress.md
+claude_idee.md
+CLAUDE_shared.md
+.claude

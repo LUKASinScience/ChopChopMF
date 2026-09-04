@@ -38,7 +38,7 @@ import pandas as pd
 import tempfile
 import zipfile
 
-from .utils import make_scrollable, make_guide_button, busy_cursor, show_error, safe_extractall
+from .utils import make_scrollable, make_guide_button, busy_cursor, show_error, safe_extractall, get_settings
 
 REQUEST_TIMEOUT = 20  # seconds
 
@@ -209,7 +209,11 @@ class ChopChopMissense(ToolInstance):
             return
 
         # 2. Download hotspot data and extract human protein sequence from TSV
-        zip_file_path, extracted_folder = self.download_hotspot_file(uniprot_id, Path.home() / "Downloads")
+        # Uses the same shared, user-changeable download folder as every other
+        # ChopChopMF tool (Sequence/AlphaMissense's own "Download folder" field
+        # changes this too) - previously hardcoded to ~/Downloads regardless.
+        download_dir = Path(get_settings(self.session).download_dir)
+        zip_file_path, extracted_folder = self.download_hotspot_file(uniprot_id, download_dir)
         if not extracted_folder:
             message = "Failed to download and extract AlphaMissense data."
             self.session.logger.warning(message)
