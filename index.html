@@ -550,7 +550,7 @@
 </div>
 
 <p>Welcome to the official guide for <a href="https://cxtoolshed.rbvi.ucsf.edu/apps/chimeraxchopchopmf" target="_blank"><strong>ChopChopMF</strong></a>, a specialized interface for fast and accessible protein structure analysis within <a href="https://www.cgl.ucsf.edu/chimerax/" target="_blank">UCSF ChimeraX</a>.</p>
-<h2 id="overview">Overview</h2>
+<h2 id="overview"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 9h2V7h-2m1 13c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8m0-18A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2m-1 15h2v-6h-2z"/></svg></span> Overview</h2>
 <p>ChopChopMF streamlines the process of analyzing protein structures by providing an intuitive toolkit for researchers. Whether you are working with AlphaFold predictions, cryo-EM models, or experimental PDB structures, ChopChopMF helps you <strong>chopchop</strong> through the complexity of molecular data.</p>
 <div class="admonition question">
 <p class="admonition-title">Why did we develop ChopChopMF?</p>
@@ -558,20 +558,39 @@
  By eliminating the requirement for extensive command-line expertise, ChopChopMF empowers a diverse range of researchers to use the full potential of structural protein data. While providing an accessible entry point for newcomers to perform analysis—such as mapping sequence alignments, mutations, and protein-protein interfaces directly onto 3D structures— it also serves as a efficiency platform for advanced users. By automating routine workflows, experts can save valuable time and focus their efforts on more specific downstream research.</p>
 <p>Ultimately, <strong>ChopChopMF</strong> acts as a <strong>bridge between disciplines</strong>. It enables researchers from outside the structural biology field to better access, interpret, and share the structural protein data that structural biologists work so hard on to produce. Our goal is to create a more integrated research environment where structural insights are seamlessly shared and understood across all biological sciences.</p>
 </div>
-<h3 id="key-features">Key Features</h3>
+<h3 id="key-features"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12 15.39-3.76 2.27.99-4.28-3.32-2.88 4.38-.37L12 6.09l1.71 4.04 4.38.37-3.32 2.88.99 4.28M22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.45 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03z"/></svg></span> Key Features</h3>
+<div class="grid cards">
 <ul>
-<li><strong>Fast Analysis</strong>: Optimized workflows to reduce the time looking up commands, all GUI based for easier and faster Workflows.</li>
-<li><strong>ChimeraX Native</strong>: Fully integrated into the ChimeraX environment via the <a href="https://cxtoolshed.rbvi.ucsf.edu/apps/chimeraxchopchopmf" target="_blank">Toolshed</a>.</li>
-<li><strong>Accessibility</strong>: A simplified interface that makes advanced structural analysis tools available to a broader range of users.</li>
+<li>
+<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 2h10l-3.5 7H17l-7 13v-8H7zm2 2v8h3v2.66L14 11h-3.76l3.52-7z"/></svg></span> <strong>Fast Analysis</strong></p>
+<hr />
+<p>Optimized workflows to reduce the time looking up commands - all GUI based for easier and faster workflows.</p>
+</li>
+<li>
+<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 13.5c0 1.76-1.3 3.22-3 3.46V20a2 2 0 0 1-2 2h-3.8v-.3a2.7 2.7 0 0 0-2.7-2.7c-1.5 0-2.7 1.21-2.7 2.7v.3H4a2 2 0 0 1-2-2v-3.8h.3C3.79 16.2 5 15 5 13.5s-1.21-2.7-2.7-2.7H2V7a2 2 0 0 1 2-2h3.04c.24-1.7 1.7-3 3.46-3s3.22 1.3 3.46 3H17a2 2 0 0 1 2 2v3.04c1.7.24 3 1.7 3 3.46M17 15h1.5a1.5 1.5 0 0 0 1.5-1.5 1.5 1.5 0 0 0-1.5-1.5H17V7h-5V5.5A1.5 1.5 0 0 0 10.5 4 1.5 1.5 0 0 0 9 5.5V7H4v2.12c1.76.68 3 2.38 3 4.38s-1.25 3.7-3 4.38V20h2.12a4.7 4.7 0 0 1 4.38-3c2 0 3.7 1.25 4.38 3H17z"/></svg></span> <strong>ChimeraX Native</strong></p>
+<hr />
+<p>Fully integrated into the ChimeraX environment via the <a href="https://cxtoolshed.rbvi.ucsf.edu/apps/chimeraxchopchopmf" target="_blank">Toolshed</a>.</p>
+</li>
+<li>
+<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m5 15-.6-.5C2.4 12.6 1 11.4 1 9.9c0-1.2 1-2.2 2.2-2.2.7 0 1.4.3 1.8.8.4-.5 1.1-.8 1.8-.8C8 7.7 9 8.6 9 9.9c0 1.5-1.4 2.7-3.4 4.6zM15 4a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 6.1A2.1 2.1 0 0 1 12.9 8 2.1 2.1 0 0 1 15 5.9a2.1 2.1 0 1 1 0 4.2m0 2.9c-2.67 0-8 1.33-8 4v3h16v-3c0-2.67-5.33-4-8-4m6.1 5.1H8.9V17c0-.64 3.1-2.1 6.1-2.1 2.97 0 6.1 1.46 6.1 2.1z"/></svg></span> <strong>Accessibility</strong></p>
+<hr />
+<p>A simplified interface that makes advanced structural analysis tools available to a broader range of users.</p>
+</li>
+<li>
+<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 22v-2h3v-3h2v3.5c0 .39-.16.74-.46 1.04s-.65.46-1.04.46zM7 22H3.5c-.39 0-.74-.16-1.04-.46S2 20.89 2 20.5V17h2v3h3zM17 2h3.5c.39 0 .74.16 1.04.46s.46.65.46 1.04V7h-2V4h-3zM7 2v2H4v3H2V3.5c0-.39.16-.74.46-1.04S3.11 2 3.5 2zm3.5 4C13 6 15 8 15 10.5c0 .88-.25 1.7-.69 2.4l3.26 3.26-1.41 1.41-3.26-3.26c-.7.44-1.52.69-2.4.69C8 15 6 13 6 10.5S8 6 10.5 6m0 2a2.5 2.5 0 0 0 0 5 2.5 2.5 0 0 0 0-5"/></svg></span> <strong>Investigate: see it all at once</strong></p>
+<hr />
+<p>Every other tool answers one question. <strong>Investigate</strong> pulls every value any ChopChopMF tool has computed for a structure - interface scores, pathogenicity, solvent accessibility, motif hits, and more - into one residue-by-residue Chart, so you can spot the connections a single tool never would. See it in action in the <a href="usage/#chopchopmf-tools">Usage Guide</a>.</p>
+</li>
 </ul>
-<h2 id="getting-started">Getting Started</h2>
+</div>
+<h2 id="getting-started"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m13.13 22.19-1.63-3.83c1.57-.58 3.04-1.36 4.4-2.27zM5.64 12.5l-3.83-1.63 6.1-2.77C7 9.46 6.22 10.93 5.64 12.5M19.22 4c.28 0 .53 0 .74.05.17 1.39-.02 4.25-3.3 7.53-1.7 1.71-3.73 3.02-6.01 3.89l-2.15-2.1c.92-2.31 2.23-4.34 3.92-6.03C15.18 4.58 17.64 4 19.22 4m0-2c-1.98 0-4.98.69-8.22 3.93-2.19 2.19-3.5 4.6-4.35 6.71-.28.75-.09 1.57.46 2.13l2.13 2.12c.38.38.89.61 1.42.61.23 0 .47-.06.7-.15A19.1 19.1 0 0 0 18.07 13c5.66-5.66 3.54-10.61 3.54-10.61S20.7 2 19.22 2m-4.68 7.46c-.78-.78-.78-2.05 0-2.83s2.05-.78 2.83 0c.77.78.78 2.05 0 2.83s-2.05.78-2.83 0m-5.66 7.07-1.41-1.41zM6.24 22l3.64-3.64c-.34-.09-.67-.24-.97-.45L4.83 22zM2 22h1.41l4.77-4.76-1.42-1.41L2 20.59zm0-2.83 4.09-4.08c-.21-.3-.36-.62-.45-.97L2 17.76z"/></svg></span> Getting Started</h2>
 <p>To get started with ChopChopMF, please follow these steps:</p>
 <ol>
 <li><strong>Installation</strong>: Check the <a href="installation/">Installation Guide</a> to add the tool to your ChimeraX environment.</li>
 <li><strong>Basic Usage</strong>: Visit the <a href="usage/">Usage Page</a> to see what Tools ChopChopMF offers you.</li>
 <li><strong>User-cases</strong>: Here we need you! You found ChopChopMF usefull and you want to share for what and how it was useful? Or what we could improve? Please contact us via <a href="mailto:lukasinscience@gmail.com">E-mail</a></li>
 </ol>
-<h2 id="quick-links">Quick Links</h2>
+<h2 id="quick-links"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10.59 13.41c.41.39.41 1.03 0 1.42-.39.39-1.03.39-1.42 0a5.003 5.003 0 0 1 0-7.07l3.54-3.54a5.003 5.003 0 0 1 7.07 0 5.003 5.003 0 0 1 0 7.07l-1.49 1.49c.01-.82-.12-1.64-.4-2.42l.47-.48a2.98 2.98 0 0 0 0-4.24 2.98 2.98 0 0 0-4.24 0l-3.53 3.53a2.98 2.98 0 0 0 0 4.24m2.82-4.24c.39-.39 1.03-.39 1.42 0a5.003 5.003 0 0 1 0 7.07l-3.54 3.54a5.003 5.003 0 0 1-7.07 0 5.003 5.003 0 0 1 0-7.07l1.49-1.49c-.01.82.12 1.64.4 2.43l-.47.47a2.98 2.98 0 0 0 0 4.24 2.98 2.98 0 0 0 4.24 0l3.53-3.53a2.98 2.98 0 0 0 0-4.24.973.973 0 0 1 0-1.42"/></svg></span> Quick Links</h2>
 <ul>
 <li>
 <p><strong>Toolshed Page</strong>: <a href="https://cxtoolshed.rbvi.ucsf.edu/apps/chimeraxchopchopmf" target="_blank">ChopChopMF on UCSF Toolshed</a></p>

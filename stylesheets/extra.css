@@ -1,3 +1,13 @@
+/* --- ACCENT COLOR: exact brand salmon (matches the h1 color below), the
+   named Material presets don't have a "salmon" so this uses accent="custom"
+   in zensical.toml with these variables filled in. --- */
+:root > * {
+  --md-accent-fg-color: #FA8072;
+  --md-accent-fg-color--transparent: #FA80721a;
+  --md-accent-bg-color: #fff;
+  --md-accent-bg-color--light: #ffffffb3;
+}
+
 /* --- TOP HEADER LOGO --- */
 .md-logo img {
   height: 3.5rem !important; 
